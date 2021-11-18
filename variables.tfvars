@@ -1,0 +1,10 @@
+project_id = "leafy-display-332513"
+name = "my-gke"
+location = "us-central1"
+network = "default"
+subnet = "default"
+default_node_pool_min_count = 1
+default_node_pool_max_count = 3
+secondary_node_pool_min_count = 1
+secondary_node_pool_max_count = 3
+machine_type = "e2-medium"
