@@ -1,1 +1,1 @@
-# terraform-google-gke-opinionated [![Latest Release](https://img.shields.io/github/release/bootlabstech/terraform-google-gke-opinionated.svg)]https://github.com/bootlabstech/terraform-google-gke-opinionated/releases/latest)
+# terraform-google-gke-opinionated [![Latest Release](https://img.shields.io/github/release/bootlabstech/terraform-google-gke-opinionated.svg)](https://github.com/bootlabstech/terraform-google-gke-opinionated/releases/latest)
