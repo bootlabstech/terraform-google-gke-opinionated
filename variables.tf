@@ -20,22 +20,22 @@ variable "subnet" {
 }
 
 variable "default_node_pool_min_count" {
-  type        = string
+  type        = number
   description = "this is the min count in the default node pool"
 }
 
 variable "default_node_pool_max_count" {
-  type        = string
+  type        = number
   description = "this is the max count in the default node pool"
 }
 
 variable "secondary_node_pool_min_count" {
-  type        = string
+  type        = number
   description = "this is the min count in the secondary node pool"
 }
 
 variable "secondary_node_pool_max_count" {
-  type        = string
+  type        = number
   description = "this is the min count in the secondary node pool"
 }
 
