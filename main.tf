@@ -29,7 +29,6 @@ resource "google_container_node_pool" "primary_node_pool" {
   name       = "${var.name}-primary-node-pool"
   location   = var.location
   cluster    = google_container_cluster.primary.name
-  node_count = 1
 
   autoscaling {
     min_node_count = var.default_node_pool_min_count
@@ -52,7 +51,6 @@ resource "google_container_node_pool" "secondary_node_pool" {
   name       = "${var.name}-secondary-node-pool"
   location   = var.location
   cluster    = google_container_cluster.primary.name
-  node_count = 1
 
   autoscaling {
     min_node_count = var.secondary_node_pool_min_count
@@ -60,6 +58,7 @@ resource "google_container_node_pool" "secondary_node_pool" {
   }
 
   node_config {
+    preemptible  = var.preemptible
     machine_type = var.machine_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.

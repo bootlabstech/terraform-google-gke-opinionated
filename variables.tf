@@ -49,6 +49,11 @@ variable "project_id" {
   description = "this is the project id in which the cluster is created"
 }
 
+variable  "preemptible" {
+  type        = string
+  description = "if set to true, the secondary node pool will be preemptible nodes"
+}
+
 // optional variables
 variable "service_account_id" {
   type        = string
