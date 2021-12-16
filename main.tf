@@ -22,6 +22,12 @@ resource "google_container_cluster" "primary" {
   # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  private_cluster_config {
+    enable_private_nodes    = var.enable_private_cluster
+    enable_private_endpoint = var.enable_private_cluster
+    master_ipv4_cidr_block  = var.master_ipv4_cidr_block
+  }
 }
 
 resource "google_container_node_pool" "primary_node_pool" {

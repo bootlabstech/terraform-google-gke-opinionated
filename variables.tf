@@ -66,3 +66,15 @@ variable "cluster_postfix" {
   description = "this will be used as the postfix for the cluster name, along with var.name"
   default     = "gke-k8s"
 }
+
+variable "master_ipv4_cidr_block" {
+  type        = string
+  description = "the master network ip range"
+  default     = "172.16.0.32/28"
+}
+
+variable "enable_private_cluster" {
+  type        = bool
+  description = "if enabled cluster becomes a private cluster"
+  default     = true
+}
