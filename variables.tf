@@ -78,3 +78,15 @@ variable "enable_private_cluster" {
   description = "if enabled cluster becomes a private cluster"
   default     = true
 }
+
+variable "is_shared_vpc" {
+  type        = bool
+  description = "if the vpc and subnet is from a shared vpc"
+  default     = false
+}
+
+variable "host_project_id" {
+  type        = string
+  description = "the host project id, needed only if is_shared_vpc is set to true"
+  default     = ""
+}
