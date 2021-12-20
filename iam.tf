@@ -14,10 +14,10 @@ data "google_project" "service_project" {
 
 resource "google_project_iam_binding" "project" {
   count = local.if_create
-  project = data.google_project.host_project.project_id
+  project = data.google_project.host_project[0].project_id
   role    = "roles/container.hostServiceAgentUser"
 
   members = [
-    "service-${data.google_project.service_project.number}@container-engine-robot.iam.gserviceaccount.com",
+    "service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
   ]
 }
