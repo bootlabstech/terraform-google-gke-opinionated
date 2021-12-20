@@ -22,6 +22,10 @@ resource "google_container_cluster" "primary" {
     enable_private_endpoint = var.enable_private_cluster
     master_ipv4_cidr_block  = var.master_ipv4_cidr_block
   }
+
+  depends_on = [
+    google_project_iam_binding.project
+  ]
 }
 
 resource "google_container_node_pool" "primary_node_pool" {

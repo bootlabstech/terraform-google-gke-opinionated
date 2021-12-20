@@ -3,17 +3,17 @@ locals {
 }
 
 data "google_project" "host_project" {
-  count = if_create
+  count = locals.if_create
   project_id = var.host_project_id
 }
 
 data "google_project" "service_project" {
-  count = if_create
+  count = locals.if_create
   project_id = var.project_id
 }
 
 resource "google_project_iam_binding" "project" {
-  count = if_create
+  count = locals.if_create
   project = data.google_project.host_project.project_id
   role    = "roles/container.hostServiceAgentUser"
 
