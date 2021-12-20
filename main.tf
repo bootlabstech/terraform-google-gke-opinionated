@@ -1,9 +1,3 @@
-resource "google_service_account" "default" {
-  account_id   = "${var.name}-${var.service_account_id}"
-  display_name = "${var.name}-${var.service_account_id}"
-  project = var.project_id
-}
-
 resource "google_container_cluster" "primary" {
   project = var.project_id
   name = "${var.name}-${var.cluster_postfix}"
@@ -45,7 +39,6 @@ resource "google_container_node_pool" "primary_node_pool" {
     machine_type = var.machine_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.default.email
     oauth_scopes    = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
@@ -68,7 +61,6 @@ resource "google_container_node_pool" "secondary_node_pool" {
     machine_type = var.machine_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.default.email
     oauth_scopes    = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
