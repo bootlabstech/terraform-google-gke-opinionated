@@ -50,7 +50,7 @@ variable "project_id" {
 }
 
 variable  "preemptible" {
-  type        = string
+  type        = bool
   description = "if set to true, the secondary node pool will be preemptible nodes"
 }
 
