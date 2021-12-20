@@ -18,6 +18,6 @@ resource "google_project_iam_binding" "project" {
   role    = "roles/container.hostServiceAgentUser"
 
   members = [
-    "service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
+    "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
   ]
 }
