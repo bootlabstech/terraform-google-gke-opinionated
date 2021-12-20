@@ -24,7 +24,9 @@ resource "google_container_cluster" "primary" {
   }
 
   depends_on = [
-    google_project_iam_binding.project
+    google_project_iam_binding.project,
+    google_compute_subnetwork_iam_member.cloudservices,
+    google_compute_subnetwork_iam_member.container_engine_robot,
   ]
 }
 
