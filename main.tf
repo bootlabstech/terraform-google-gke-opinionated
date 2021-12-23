@@ -66,7 +66,6 @@ resource "google_container_node_pool" "secondary_node_pool" {
   name       = "${var.name}-secondary-node-pool"
   location   = var.location
   cluster    = google_container_cluster.primary.name
-  initial_node_count = 1
 
   autoscaling {
     min_node_count = var.secondary_node_pool_min_count
