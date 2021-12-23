@@ -7,8 +7,10 @@ resource "google_container_cluster" "primary" {
   subnetwork = var.subnet
 
   ip_allocation_policy {
-    cluster_ipv4_cidr_block = "/14"
-    services_ipv4_cidr_block = "/16"
+    cluster_ipv4_cidr_block = var.is_shared_vpc ? null : "/14"
+    services_ipv4_cidr_block = var.is_shared_vpc ? null : "/16"
+    cluster_secondary_range_name = var.is_shared_vpc ? var.cluster_secondary_range_name : null
+    services_secondary_range_name = var.is_shared_vpc ? var.services_secondary_range_name : null
   }
 
   # We can't create a cluster with no node pool defined, but we want to only use

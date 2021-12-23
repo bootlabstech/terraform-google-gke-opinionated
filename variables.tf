@@ -90,3 +90,15 @@ variable "host_project_id" {
   description = "the host project id, needed only if is_shared_vpc is set to true"
   default     = ""
 }
+
+variable "services_secondary_range_name" {
+  type        = string
+  description = "the secondary range name of the subnet to be used for services, this is needed if is_shared_vpc is enabled"
+  default     = ""
+}
+
+variable "cluster_secondary_range_name" {
+  type        = string
+  description = "the secondary range name of the subnet to be used for pods, this is needed if is_shared_vpc is enabled"
+  default     = ""
+}
