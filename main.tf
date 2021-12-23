@@ -68,7 +68,21 @@ resource "google_container_node_pool" "secondary_node_pool" {
     preemptible  = var.preemptible
     machine_type = var.machine_type
 
-    taint = var.preemptible ? [ "cloud.google.com/gke-preemptible=true:NoSchedule" ] : null
+    dynamic "taint" {
+      for_each = var.preemptible ? [ 
+        {
+          key = "cloud.google.com/gke-preemptible"
+          value = "true"
+          effect = "NO_SCHEDULE"
+        } 
+      ] : []
+      
+      content {
+        key = taint.value.key
+        value = taint.value.value
+        effect = taint.value.effect
+      }
+    }
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes    = [
