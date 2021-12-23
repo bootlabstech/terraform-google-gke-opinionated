@@ -20,7 +20,7 @@ resource "google_container_cluster" "primary" {
   private_cluster_config {
     enable_private_nodes    = var.enable_private_cluster
     enable_private_endpoint = var.enable_private_cluster
-    master_ipv4_cidr_block  = var.master_ipv4_cidr_block
+    master_ipv4_cidr_block  = var.enable_private_cluster ? var.master_ipv4_cidr_block : null
   }
 
   depends_on = [
