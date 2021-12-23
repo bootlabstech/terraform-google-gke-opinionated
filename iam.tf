@@ -32,7 +32,7 @@ resource "google_compute_subnetwork_iam_member" "cloudservices" {
   project = data.google_project.host_project[0].project_id
   subnetwork = var.subnet
   role       = "roles/compute.networkUser"
-  member     = "serviceAccount:${data.google_project.service_project[0].project_id}@cloudservices.gserviceaccount.com"
+  member     = "serviceAccount:${data.google_project.service_project[0].number}@cloudservices.gserviceaccount.com"
 }
 
 resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
@@ -40,5 +40,5 @@ resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
   project = data.google_project.host_project[0].project_id
   subnetwork = var.subnet
   role       = "roles/compute.networkUser"
-  member     = "serviceAccount:service-${data.google_project.service_project[0].project_id}@container-engine-robot.iam.gserviceaccount.com"
+  member     = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
 }
