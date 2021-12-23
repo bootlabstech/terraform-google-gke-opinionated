@@ -1,6 +1,7 @@
 resource "google_service_account" "default" {
   account_id   = "${var.name}-sa"
   display_name = "${var.name}-sa"
+  project      = var.project_id
 }
 
 resource "google_container_cluster" "primary" {
