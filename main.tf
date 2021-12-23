@@ -68,6 +68,8 @@ resource "google_container_node_pool" "secondary_node_pool" {
     preemptible  = var.preemptible
     machine_type = var.machine_type
 
+    taint = var.preemptible ? [ "cloud.google.com/gke-preemptible=true:NoSchedule" ] ? []
+
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes    = [
       "https://www.googleapis.com/auth/cloud-platform"
