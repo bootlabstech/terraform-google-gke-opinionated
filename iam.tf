@@ -24,6 +24,15 @@ resource "google_project_iam_binding" "project" {
   ]
 }
 
+resource "google_project_iam_binding" "project" {
+  count = local.if_create
+  project = data.google_project.host_project[0].project_id
+  role    = "roles/compute.securityAdmin"
+
+  members = [
+    "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
+  ]
+}
 
 // network access
 // https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc
