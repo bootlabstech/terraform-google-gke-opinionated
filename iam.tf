@@ -24,7 +24,7 @@ resource "google_project_iam_binding" "project" {
   ]
 }
 
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_binding" "securityadmin" {
   count = local.if_create
   project = data.google_project.host_project[0].project_id
   role    = "roles/compute.securityAdmin"
