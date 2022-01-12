@@ -25,6 +25,12 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
+  dynamic "master_authorized_networks_config" {
+    for_each = var.enable_private_cluster == true ? [1] : []
+    content {
+    }
+  }
+  
   private_cluster_config {
     enable_private_nodes    = var.enable_private_cluster
     enable_private_endpoint = var.enable_private_cluster
@@ -101,6 +107,7 @@ resource "google_container_node_pool" "secondary_node_pool" {
   }
 }
 
+// Create an external NAT IP
 resource "google_compute_address" "nat" {
   count = "${var.enable_private_cluster ? 1 : 0}"
   name    = format("%s-nat-ip", var.name)
