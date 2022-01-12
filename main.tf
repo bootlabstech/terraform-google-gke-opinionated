@@ -100,3 +100,45 @@ resource "google_container_node_pool" "secondary_node_pool" {
     ]
   }
 }
+
+resource "google_compute_address" "nat" {
+  count = "${var.enable_private_cluster ? 1 : 0}"
+  name    = format("%s-nat-ip", var.name)
+  project = var.host_project_id
+}
+
+// Create a cloud router for use by the Cloud NAT
+resource "google_compute_router" "router" {
+  count = "${var.enable_private_cluster ? 1 : 0}"
+  name    = format("%s-cloud-router", var.name)
+  project = var.host_project_id
+  network = var.network
+
+  bgp {
+    asn = 64514
+  }
+}
+
+// Create a NAT router so the nodes can reach DockerHub, etc
+resource "google_compute_router_nat" "nat" {
+  count = "${var.enable_private_cluster ? 1 : 0}"
+  name    = format("%s-cloud-nat", var.name)
+  project = var.host_project_id
+  router  = google_compute_router.router.name
+
+  nat_ip_allocate_option = "MANUAL_ONLY"
+
+  nat_ips = [google_compute_address.nat.self_link]
+
+  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
+
+  subnetwork {
+    name                    = var.subnet
+    source_ip_ranges_to_nat = ["PRIMARY_IP_RANGE", "LIST_OF_SECONDARY_IP_RANGES"]
+
+    secondary_ip_range_names = [
+      var.cluster_secondary_range_name,
+      var.services_secondary_range_name,
+    ]
+  }
+}
