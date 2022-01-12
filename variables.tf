@@ -106,5 +106,5 @@ variable "cluster_secondary_range_name" {
 variable "subnet_region" {
   type        = string
   description = "Region where the router and NAT reside."
-  default = var.location
+  default = ""
 }
