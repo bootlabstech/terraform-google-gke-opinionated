@@ -5,12 +5,12 @@ resource "google_service_account" "default" {
 }
 
 resource "google_container_cluster" "primary" {
-  project = var.project_id
-  name = "${var.name}-${var.cluster_postfix}"
-  location = var.location
+  project         = var.project_id
+  name            = "${var.name}-${var.cluster_postfix}"
+  location        = var.location
   networking_mode = "VPC_NATIVE"
-  network = var.network
-  subnetwork = var.subnet
+  network         = var.network
+  subnetwork      = var.subnet
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block = var.is_shared_vpc ? null : "/14"
@@ -45,7 +45,7 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_node_pool" {
-  project = var.project_id
+  project    = var.project_id
   name       = "${var.name}-primary-node-pool"
   location   = var.location
   cluster    = google_container_cluster.primary.name
@@ -68,7 +68,7 @@ resource "google_container_node_pool" "primary_node_pool" {
 }
 
 resource "google_container_node_pool" "secondary_node_pool" {
-  project = var.project_id
+  project    = var.project_id
   name       = "${var.name}-secondary-node-pool"
   location   = var.location
   cluster    = google_container_cluster.primary.name
@@ -109,19 +109,19 @@ resource "google_container_node_pool" "secondary_node_pool" {
 
 // Create an external NAT IP
 resource "google_compute_address" "nat" {
-  count = "${var.enable_private_cluster ? 1 : 0}"
+  count   = "${var.enable_private_cluster ? 1 : 0}"
   name    = format("%s-nat-ip", var.name)
   project = var.host_project_id
-  region = var.subnet_region
+  region  = var.subnet_region
 }
 
 // Create a cloud router for use by the Cloud NAT
 resource "google_compute_router" "router" {
-  count = "${var.enable_private_cluster ? 1 : 0}"
+  count   = "${var.enable_private_cluster ? 1 : 0}"
   name    = format("%s-cloud-router", var.name)
   project = var.host_project_id
   network = var.network
-  region = var.subnet_region
+  region  = var.subnet_region
 
   bgp {
     asn = 64514
@@ -130,11 +130,11 @@ resource "google_compute_router" "router" {
 
 // Create a NAT router so the nodes can reach DockerHub, etc
 resource "google_compute_router_nat" "nat" {
-  count = "${var.enable_private_cluster ? 1 : 0}"
+  count   = "${var.enable_private_cluster ? 1 : 0}"
   name    = format("%s-cloud-nat", var.name)
   project = var.host_project_id
   router  = google_compute_router.router[0].name
-  region = google_compute_router.router.region
+  region  = google_compute_router.router[0].region
 
   nat_ip_allocate_option = "MANUAL_ONLY"
 
