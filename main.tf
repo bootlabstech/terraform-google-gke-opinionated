@@ -131,11 +131,11 @@ resource "google_compute_router_nat" "nat" {
   count = "${var.enable_private_cluster ? 1 : 0}"
   name    = format("%s-cloud-nat", var.name)
   project = var.host_project_id
-  router  = google_compute_router.router.name
+  router  = google_compute_router.router[0].name
 
   nat_ip_allocate_option = "MANUAL_ONLY"
 
-  nat_ips = [google_compute_address.nat.self_link]
+  nat_ips = [google_compute_address.nat[0].self_link]
 
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
 
