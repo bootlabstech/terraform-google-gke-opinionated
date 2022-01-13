@@ -102,3 +102,9 @@ variable "cluster_secondary_range_name" {
   description = "the secondary range name of the subnet to be used for pods, this is needed if is_shared_vpc is enabled"
   default     = ""
 }
+
+variable "subnet_region" {
+  type        = string
+  description = "Region where the router and NAT reside."
+  default = var.location
+}

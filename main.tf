@@ -112,6 +112,7 @@ resource "google_compute_address" "nat" {
   count = "${var.enable_private_cluster ? 1 : 0}"
   name    = format("%s-nat-ip", var.name)
   project = var.host_project_id
+  region = var.subnet_region
 }
 
 // Create a cloud router for use by the Cloud NAT
@@ -120,6 +121,7 @@ resource "google_compute_router" "router" {
   name    = format("%s-cloud-router", var.name)
   project = var.host_project_id
   network = var.network
+  region = var.subnet_region
 
   bgp {
     asn = 64514
@@ -132,6 +134,7 @@ resource "google_compute_router_nat" "nat" {
   name    = format("%s-cloud-nat", var.name)
   project = var.host_project_id
   router  = google_compute_router.router[0].name
+  region = google_compute_router.router.region
 
   nat_ip_allocate_option = "MANUAL_ONLY"
 
