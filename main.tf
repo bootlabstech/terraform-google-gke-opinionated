@@ -152,3 +152,10 @@ resource "google_compute_router_nat" "nat" {
     ]
   }
 }
+
+//Docker pull from cluster
+resource "google_storage_bucket_iam_member" "member" {
+  bucket = "artifacts.${var.project_id}.appspot.com"
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${gke_service_account.default.email}"
+}
