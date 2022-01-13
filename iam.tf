@@ -51,3 +51,10 @@ resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
   role       = "roles/compute.networkUser"
   member     = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
 }
+
+//Docker pull from cluster
+resource "google_storage_bucket_iam_member" "member" {
+  bucket = "artifacts.${var.project_id}.appspot.com"
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${gke_service_account.default.email}"
+}
