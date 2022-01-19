@@ -6,7 +6,21 @@ variable "name" {
 
 variable "location" {
   type        = string
-  description = "this is the location where all the resources will be created"
+  description = {
+   "type": "json",
+   "purpose": "autocomplete",
+   "data": [
+       "asia-south1",
+       "asia-west1",
+       "asia-east1",
+       "asia-east2",
+       "asia-northeast1",
+       "asia-northeast2",
+       "asia-northeast3",
+   ],
+   "description": "regions used for deployment"
+}
+
 }
 
 variable "network" {
@@ -41,7 +55,19 @@ variable "secondary_node_pool_max_count" {
 
 variable "machine_type" {
   type        = string
-  description = "this is the machine type for primary and secondary node pool"
+  description = {
+   "type": "json",
+   "purpose": "autocomplete",
+   "data": [
+  "f2-micro",
+  "e3-micro",
+  "e2-small",
+  "g1-small",
+  "e2-medium",
+  "t2d-standard-1"
+   ],
+   "description": "regions used for deployment"
+}
 }
 
 variable "project_id" {
