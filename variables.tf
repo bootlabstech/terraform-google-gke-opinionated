@@ -55,7 +55,8 @@ variable "secondary_node_pool_max_count" {
 
 variable "machine_type" {
   type        = string
-  description = {
+  description = <<-EOT
+  {
    "type": "json",
    "purpose": "autocomplete",
    "data": [
@@ -68,11 +69,18 @@ variable "machine_type" {
    ],
    "description": "regions used for deployment"
 }
+EOT
 }
 
 variable "project_id" {
   type        = string
-  description = "this is the project id in which the cluster is created"
+  description = {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data": "http://localhost:8000/api/v1/organizations/mpaasworkspacetest/projects",
+   "description": ""
+}
+
 }
 
 variable  "preemptible" {
