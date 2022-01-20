@@ -60,12 +60,12 @@ variable "machine_type" {
    "type": "json",
    "purpose": "autocomplete",
    "data": [
-  "f2-micro",
-  "e3-micro",
-  "e2-small",
-  "g1-small",
-  "e2-medium",
-  "t2d-standard-1"
+    "f2-micro",
+    "e3-micro",
+    "e2-small",
+    "g1-small",
+    "e2-medium",
+    "t2d-standard-1"
    ],
    "description": "regions used for deployment"
 }
@@ -74,13 +74,14 @@ EOT
 
 variable "project_id" {
   type        = string
-  description = {
+  description =  <<-EOT
+  {
    "type": "api",
    "purpose": "autocomplete",
    "data": "http://localhost:8000/api/v1/organizations/mpaasworkspacetest/projects",
    "description": ""
-}
-
+  }
+EOT
 }
 
 variable  "preemptible" {
