@@ -6,7 +6,8 @@ variable "name" {
 
 variable "location" {
   type        = string
-  description = {
+  description = <<-EOT
+  {
    "type": "json",
    "purpose": "autocomplete",
    "data": [
@@ -20,7 +21,7 @@ variable "location" {
    ],
    "description": "regions used for deployment"
 }
-
+EOT
 }
 
 variable "network" {
