@@ -6,7 +6,8 @@ variable "name" {
 
 variable "location" {
   type        = string
-  description = {
+  description = <<-EOT
+  {
    "type": "json",
    "purpose": "autocomplete",
    "data": [
@@ -20,7 +21,7 @@ variable "location" {
    ],
    "description": "regions used for deployment"
 }
-
+EOT
 }
 
 variable "network" {
@@ -55,24 +56,33 @@ variable "secondary_node_pool_max_count" {
 
 variable "machine_type" {
   type        = string
-  description = {
+  description = <<-EOT
+  {
    "type": "json",
    "purpose": "autocomplete",
    "data": [
-  "f2-micro",
-  "e3-micro",
-  "e2-small",
-  "g1-small",
-  "e2-medium",
-  "t2d-standard-1"
+    "f2-micro",
+    "e3-micro",
+    "e2-small",
+    "g1-small",
+    "e2-medium",
+    "t2d-standard-1"
    ],
    "description": "regions used for deployment"
 }
+EOT
 }
 
 variable "project_id" {
   type        = string
-  description = "this is the project id in which the cluster is created"
+  description =  <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data": "http://localhost:8000/api/v1/organizations/mpaasworkspacetest/projects",
+   "description": ""
+  }
+EOT
 }
 
 variable  "preemptible" {
