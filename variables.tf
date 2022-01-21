@@ -17,7 +17,7 @@ variable "location" {
        "asia-east2",
        "asia-northeast1",
        "asia-northeast2",
-       "asia-northeast3",
+       "asia-northeast3"
    ],
    "description": "regions used for deployment"
 }
