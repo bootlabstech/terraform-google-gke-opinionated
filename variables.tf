@@ -6,7 +6,14 @@ variable "name" {
 
 variable "location" {
   type        = string
-  description = "this is the location where all the resources will be created"
+  description = <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data":"api/gcp/locations",
+   "description": "regions used for deployment"
+}
+EOT
 }
 
 variable "network" {
@@ -41,12 +48,32 @@ variable "secondary_node_pool_max_count" {
 
 variable "machine_type" {
   type        = string
-  description = "this is the machine type for primary and secondary node pool"
+  description = <<-EOT
+  {
+   "type": "json",
+   "purpose": "autocomplete",
+   "data": [
+    "f2-micro",
+    "e3-micro",
+    "e2-small",
+    "g1-small",
+    "e2-medium",
+    "t2d-standard-1"
+   ],
+   "description": "regions used for deployment"
+}
+EOT
 }
 
 variable "project_id" {
   type        = string
-  description = "this is the project id in which the cluster is created"
+  description =  <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "description": ""
+  }
+EOT
 }
 
 variable  "preemptible" {
@@ -105,6 +132,13 @@ variable "cluster_secondary_range_name" {
 
 variable "subnet_region" {
   type        = string
-  description = "Region where the router and NAT reside."
+  description =  <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data":"api/gcp/regions",
+   "description": "regions used for deployment"
+}
+EOT
   default = ""
 }
