@@ -8,17 +8,9 @@ variable "location" {
   type        = string
   description = <<-EOT
   {
-   "type": "json",
+   "type": "api",
    "purpose": "autocomplete",
-   "data": [
-       "asia-south1",
-       "asia-west1",
-       "asia-east1",
-       "asia-east2",
-       "asia-northeast1",
-       "asia-northeast2",
-       "asia-northeast3"
-   ],
+   "data":"api/gcp/locations",
    "description": "regions used for deployment"
 }
 EOT
@@ -141,6 +133,13 @@ variable "cluster_secondary_range_name" {
 
 variable "subnet_region" {
   type        = string
-  description = "Region where the router and NAT reside."
+  description =  <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data":"api/gcp/regions",
+   "description": "regions used for deployment"
+}
+EOT
   default = ""
 }
