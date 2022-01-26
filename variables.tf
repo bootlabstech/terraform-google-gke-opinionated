@@ -71,6 +71,7 @@ variable "project_id" {
   {
    "type": "api",
    "purpose": "autocomplete",
+   "data": "http://localhost:8000/api/v1/organizations/mpaasworkspacetest/projects",
    "description": ""
   }
 EOT
