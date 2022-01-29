@@ -67,7 +67,7 @@ EOT
 
 variable "project_id" {
   type        = string
-  description =  <<-EOT
+  description = <<-EOT
   {
    "type": "api",
    "purpose": "autocomplete",
@@ -77,7 +77,7 @@ variable "project_id" {
 EOT
 }
 
-variable  "preemptible" {
+variable "preemptible" {
   type        = bool
   description = "if set to true, the secondary node pool will be preemptible nodes"
 }
@@ -133,7 +133,7 @@ variable "cluster_secondary_range_name" {
 
 variable "subnet_region" {
   type        = string
-  description =  <<-EOT
+  description = <<-EOT
   {
    "type": "api",
    "purpose": "autocomplete",
@@ -141,5 +141,21 @@ variable "subnet_region" {
    "description": "regions used for deployment"
 }
 EOT
-  default = ""
+  default     = ""
+}
+
+variable "oauth_scopes" {
+  type        = list(string)
+  description = "oauth scopes for gke cluster"
+  default     = ["https://www.googleapis.com/auth/cloud-platform"]
+}
+
+variable "workload_identity" {
+  type    = bool
+  default = false
+}
+
+variable "enable_shielded_nodes" {
+  type    = bool
+  default = false
 }
