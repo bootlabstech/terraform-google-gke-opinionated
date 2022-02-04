@@ -18,12 +18,26 @@ EOT
 
 variable "network" {
   type        = string
-  description = "this is the vpc for the cluster"
+  description = <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data":"api/gcp/network",
+   "description": "this is the vpc for the cluster"
+}
+EOT
 }
 
 variable "subnet" {
   type        = string
-  description = "this is the subnet for the cluster"
+  description = <<-EOT
+  {
+   "type": "api",
+   "purpose": "autocomplete",
+   "data":"api/gcp/network",
+   "description": "this is the subnet for the cluster"
+}
+EOT
 }
 
 variable "default_node_pool_min_count" {
@@ -71,15 +85,25 @@ variable "project_id" {
   {
    "type": "api",
    "purpose": "autocomplete",
-   "data": "http://localhost:8000/api/v1/organizations/mpaasworkspacetest/projects",
-   "description": ""
+   "data":"api/gcp/projectId",
+   "description": "project ID"
   }
 EOT
 }
 
 variable  "preemptible" {
   type        = bool
-  description = "if set to true, the secondary node pool will be preemptible nodes"
+  description = <<-EOT
+  {
+   "type": "json",
+   "purpose": "autocomplete",
+   "data": [
+  "true",
+  "false"
+   ],
+   "description": "if set to true, the secondary node pool will be preemptible nodes"
+}
+EOT
 }
 
 // optional variables
@@ -103,13 +127,34 @@ variable "master_ipv4_cidr_block" {
 
 variable "enable_private_cluster" {
   type        = bool
-  description = "if enabled cluster becomes a private cluster"
+  description = <<-EOT
+  {
+   "type": "json",
+   "purpose": "autocomplete",
+   "data": [
+  "true",
+  "false"
+   ],
+   "description": "if enabled cluster becomes a private cluster"
+}
+EOT
   default     = true
 }
 
+
 variable "is_shared_vpc" {
   type        = bool
-  description = "if the vpc and subnet is from a shared vpc"
+  description =<<-EOT
+  {
+   "type": "json",
+   "purpose": "autocomplete",
+   "data": [
+  "true",
+  "false"
+   ],
+   "description": "if the vpc and subnet is from a shared vpc"
+   }
+EOT 
   default     = false
 }
 
