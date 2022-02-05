@@ -22,7 +22,7 @@ variable "network" {
   {
    "type": "api",
    "purpose": "autocomplete",
-   "data":"api/gcp/network",
+   "data":"api/gcp/_projectId/network",
    "description": "this is the vpc for the cluster"
 }
 EOT
@@ -34,7 +34,7 @@ variable "subnet" {
   {
    "type": "api",
    "purpose": "autocomplete",
-   "data":"api/gcp/network",
+   "data":"api/gcp/{$projectID}/{$Zone}/subnetwork",
    "description": "this is the subnet for the cluster"
 }
 EOT
@@ -66,14 +66,7 @@ variable "machine_type" {
   {
    "type": "json",
    "purpose": "autocomplete",
-   "data": [
-    "f2-micro",
-    "e3-micro",
-    "e2-small",
-    "g1-small",
-    "e2-medium",
-    "t2d-standard-1"
-   ],
+   "data": "api/gcp/{$projectID}/{$Zone}/listMachineTypes",
    "description": "regions used for deployment"
 }
 EOT
@@ -95,12 +88,13 @@ variable  "preemptible" {
   type        = bool
   description = <<-EOT
   {
-   "type": "json",
+   "type": "bool",
    "purpose": "autocomplete",
    "data": [
   "true",
   "false"
    ],
+   "default":true
    "description": "if set to true, the secondary node pool will be preemptible nodes"
 }
 EOT
@@ -129,12 +123,13 @@ variable "enable_private_cluster" {
   type        = bool
   description = <<-EOT
   {
-   "type": "json",
+   "type": "bool",
    "purpose": "autocomplete",
    "data": [
   "true",
   "false"
    ],
+   Default:"true",
    "description": "if enabled cluster becomes a private cluster"
 }
 EOT
@@ -146,7 +141,7 @@ variable "is_shared_vpc" {
   type        = bool
   description =<<-EOT
   {
-   "type": "json",
+   "type": "bool",
    "purpose": "autocomplete",
    "data": [
   "true",
