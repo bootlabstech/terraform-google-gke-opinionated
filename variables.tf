@@ -8,7 +8,7 @@ variable "location" {
   type        = string
   description = <<-EOT
   {
-   "type": "json",
+   "type": "api",
    "purpose": "autocomplete",
    "data": "/api/v1/autocomplete/regions",
    "description": "regions used for deployment"
@@ -266,7 +266,7 @@ variable "subnet_region" {
   type        = string
   description =  <<-EOT
   {
-   "type": "json",
+   "type": "api",
    "purpose": "autocomplete",
    "data": "/api/v1/autocomplete/regions",
    "description": "regions used for deployment"
