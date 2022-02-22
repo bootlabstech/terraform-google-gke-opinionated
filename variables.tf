@@ -337,7 +337,7 @@ variable "enable_private_cluster" {
   "true",
   "false"
    ],
-   Default:"true",
+   "Default":"true",
    "description": "if enabled cluster becomes a private cluster"
 }
 EOT
