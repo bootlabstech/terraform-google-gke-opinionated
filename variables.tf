@@ -190,6 +190,10 @@ variable  "preemptible" {
 }
 EOT
 }
+variable "tags" {
+  type        = list(string)
+  description = "this will be used for tagging resources."
+}
 
 // optional variables
 variable "service_account_id" {
