@@ -2,6 +2,7 @@ resource "google_service_account" "default" {
   account_id   = "${var.name}-sa"
   display_name = "${var.name}-sa"
   project      = var.project_id
+  tags         = var.tags
 }
 
 resource "google_container_cluster" "primary" {
@@ -11,6 +12,7 @@ resource "google_container_cluster" "primary" {
   networking_mode = "VPC_NATIVE"
   network         = var.network
   subnetwork      = var.subnet
+  tags            = var.tags
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block = var.is_shared_vpc ? null : "/14"
@@ -113,6 +115,7 @@ resource "google_compute_address" "nat" {
   name    = format("%s-nat-ip", var.name)
   project = var.host_project_id
   region  = var.subnet_region
+  tags    = var.tags
 }
 
 // Create a cloud router for use by the Cloud NAT
@@ -122,6 +125,7 @@ resource "google_compute_router" "router" {
   project = var.host_project_id
   network = var.network
   region  = var.subnet_region
+  tags    = var.tags
 
   bgp {
     asn = 64514
@@ -135,6 +139,7 @@ resource "google_compute_router_nat" "nat" {
   project = var.host_project_id
   router  = google_compute_router.router[0].name
   region  = google_compute_router.router[0].region
+  tags    = var.tags
 
   nat_ip_allocate_option = "MANUAL_ONLY"
 
