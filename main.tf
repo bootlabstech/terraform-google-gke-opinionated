@@ -71,9 +71,10 @@ resource "google_container_node_pool" "primary_node_pool" {
   }
 
   node_config {
-    service_account = google_service_account.default.email
-    machine_type    = var.machine_type
-    image_type      = var.image_type
+    service_account   = google_service_account.default.email
+    machine_type      = var.machine_type
+    image_type        = var.image_type
+    boot_disk_kms_key = var.boot_disk_kms_key
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes = tolist(var.oauth_scopes)
@@ -106,10 +107,11 @@ resource "google_container_node_pool" "secondary_node_pool" {
     auto_repair = true
   }
   node_config {
-    service_account = google_service_account.default.email
-    preemptible     = var.preemptible
-    machine_type    = var.machine_type
-    image_type      = var.image_type
+    service_account   = google_service_account.default.email
+    preemptible       = var.preemptible
+    machine_type      = var.machine_type
+    image_type        = var.image_type
+    boot_disk_kms_key = var.boot_disk_kms_key
 
     dynamic "taint" {
       for_each = var.preemptible ? [

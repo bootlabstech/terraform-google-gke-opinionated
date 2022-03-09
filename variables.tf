@@ -88,6 +88,11 @@ variable "preemptible" {
   description = "if set to true, the secondary node pool will be preemptible nodes"
 }
 
+variable "boot_disk_kms_key" {
+  type        = string
+  description = "the Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool"
+}
+
 // optional variables
 variable "service_account_id" {
   type        = string
