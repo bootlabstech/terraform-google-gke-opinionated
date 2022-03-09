@@ -65,9 +65,15 @@ variable "machine_type" {
 EOT
 }
 
+variable "image_type" {
+  type        = string
+  default     = "COS"
+  description = "the default image type used by NAP once a new node pool is being created"
+}
+
 variable "project_id" {
   type        = string
-  description =  <<-EOT
+  description = <<-EOT
   {
    "type": "api",
    "purpose": "autocomplete",
@@ -77,7 +83,7 @@ variable "project_id" {
 EOT
 }
 
-variable  "preemptible" {
+variable "preemptible" {
   type        = bool
   description = "if set to true, the secondary node pool will be preemptible nodes"
 }
@@ -133,7 +139,7 @@ variable "cluster_secondary_range_name" {
 
 variable "subnet_region" {
   type        = string
-  description =  <<-EOT
+  description = <<-EOT
   {
    "type": "api",
    "purpose": "autocomplete",
@@ -141,5 +147,35 @@ variable "subnet_region" {
    "description": "regions used for deployment"
 }
 EOT
-  default = ""
+  default     = ""
 }
+
+variable "enable_shielded_nodes" {
+  type        = bool
+  default     = true
+  description = "Enable Shielded Nodes features on all nodes in this cluster"
+}
+
+variable "workload_identity" {
+  type        = bool
+  default     = true
+  description = "to enable workload identity metadata"
+}
+
+variable "enable_intranode_visibility" {
+  type        = bool
+  default     = true
+  description = "to enable intra node visibility for the cluster"
+}
+
+variable "oauth_scopes" {
+  type        = list(string)
+  description = "oauth scopes for gke cluster"
+  default     = ["https://www.googleapis.com/auth/cloud-platform"]
+}
+
+# variable "enable_binary_authorization" {
+#   type        = bool
+#   default     = true
+#   description = "to enable binary authorization"
+# }

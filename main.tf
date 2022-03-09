@@ -5,17 +5,20 @@ resource "google_service_account" "default" {
 }
 
 resource "google_container_cluster" "primary" {
-  project         = var.project_id
-  name            = "${var.name}-${var.cluster_postfix}"
-  location        = var.location
-  networking_mode = "VPC_NATIVE"
-  network         = var.network
-  subnetwork      = var.subnet
+  project                     = var.project_id
+  name                        = "${var.name}-${var.cluster_postfix}"
+  location                    = var.location
+  networking_mode             = "VPC_NATIVE"
+  network                     = var.network
+  subnetwork                  = var.subnet
+  enable_shielded_nodes       = var.enable_shielded_nodes
+  enable_intranode_visibility = var.enable_intranode_visibility
+  #enable_binary_authorization = var.enable_binary_authorization
 
   ip_allocation_policy {
-    cluster_ipv4_cidr_block = var.is_shared_vpc ? null : "/14"
-    services_ipv4_cidr_block = var.is_shared_vpc ? null : "/16"
-    cluster_secondary_range_name = var.is_shared_vpc ? var.cluster_secondary_range_name : null
+    cluster_ipv4_cidr_block       = var.is_shared_vpc ? null : "/14"
+    services_ipv4_cidr_block      = var.is_shared_vpc ? null : "/16"
+    cluster_secondary_range_name  = var.is_shared_vpc ? var.cluster_secondary_range_name : null
     services_secondary_range_name = var.is_shared_vpc ? var.services_secondary_range_name : null
   }
 
@@ -30,7 +33,14 @@ resource "google_container_cluster" "primary" {
     content {
     }
   }
-  
+
+  dynamic "workload_identity_config" {
+    for_each = var.workload_identity ? [1] : []
+    content {
+      workload_pool = "${data.google_project.service_project.project_id}.svc.id.goog"
+    }
+  }
+
   private_cluster_config {
     enable_private_nodes    = var.enable_private_cluster
     enable_private_endpoint = var.enable_private_cluster
@@ -45,10 +55,10 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_node_pool" {
-  project    = var.project_id
-  name       = "${var.name}-primary-node-pool"
-  location   = var.location
-  cluster    = google_container_cluster.primary.name
+  project            = var.project_id
+  name               = "${var.name}-primary-node-pool"
+  location           = var.location
+  cluster            = google_container_cluster.primary.name
   initial_node_count = 1
 
   autoscaling {
@@ -56,22 +66,35 @@ resource "google_container_node_pool" "primary_node_pool" {
     max_node_count = var.default_node_pool_max_count
   }
 
+  management {
+    auto_repair = true
+  }
+
   node_config {
     service_account = google_service_account.default.email
-    machine_type = var.machine_type
+    machine_type    = var.machine_type
+    image_type      = var.image_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    oauth_scopes    = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
+    oauth_scopes = tolist(var.oauth_scopes)
+    dynamic "workload_metadata_config" {
+      for_each = var.workload_identity ? [1] : []
+      content {
+        mode = "GKE_METADATA"
+      }
+    }
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
+    }
   }
 }
 
 resource "google_container_node_pool" "secondary_node_pool" {
-  project    = var.project_id
-  name       = "${var.name}-secondary-node-pool"
-  location   = var.location
-  cluster    = google_container_cluster.primary.name
+  project            = var.project_id
+  name               = "${var.name}-secondary-node-pool"
+  location           = var.location
+  cluster            = google_container_cluster.primary.name
   initial_node_count = 1
 
   autoscaling {
@@ -79,37 +102,49 @@ resource "google_container_node_pool" "secondary_node_pool" {
     max_node_count = var.secondary_node_pool_max_count
   }
 
+  management {
+    auto_repair = true
+  }
   node_config {
     service_account = google_service_account.default.email
-    preemptible  = var.preemptible
-    machine_type = var.machine_type
+    preemptible     = var.preemptible
+    machine_type    = var.machine_type
+    image_type      = var.image_type
 
     dynamic "taint" {
-      for_each = var.preemptible ? [ 
+      for_each = var.preemptible ? [
         {
-          key = "cloud.google.com/gke-preemptible"
-          value = "true"
+          key    = "cloud.google.com/gke-preemptible"
+          value  = "true"
           effect = "NO_SCHEDULE"
-        } 
+        }
       ] : []
-      
+
       content {
-        key = taint.value.key
-        value = taint.value.value
+        key    = taint.value.key
+        value  = taint.value.value
         effect = taint.value.effect
       }
     }
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    oauth_scopes    = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
+    oauth_scopes = tolist(var.oauth_scopes)
+    dynamic "workload_metadata_config" {
+      for_each = var.workload_identity ? [1] : []
+      content {
+        mode = "GKE_METADATA"
+      }
+    }
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
+    }
   }
 }
 
 // Create an external NAT IP
 resource "google_compute_address" "nat" {
-  count   = "${var.enable_private_cluster ? 1 : 0}"
+  count   = var.enable_private_cluster ? 1 : 0
   name    = format("%s-nat-ip", var.name)
   project = var.host_project_id
   region  = var.subnet_region
@@ -117,7 +152,7 @@ resource "google_compute_address" "nat" {
 
 // Create a cloud router for use by the Cloud NAT
 resource "google_compute_router" "router" {
-  count   = "${var.enable_private_cluster ? 1 : 0}"
+  count   = var.enable_private_cluster ? 1 : 0
   name    = format("%s-cloud-router", var.name)
   project = var.host_project_id
   network = var.network
@@ -130,7 +165,7 @@ resource "google_compute_router" "router" {
 
 // Create a NAT router so the nodes can reach DockerHub, etc
 resource "google_compute_router_nat" "nat" {
-  count   = "${var.enable_private_cluster ? 1 : 0}"
+  count   = var.enable_private_cluster ? 1 : 0
   name    = format("%s-cloud-nat", var.name)
   project = var.host_project_id
   router  = google_compute_router.router[0].name
