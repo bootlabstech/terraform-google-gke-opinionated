@@ -113,7 +113,7 @@ resource "google_container_node_pool" "secondary_node_pool" {
     preemptible       = var.preemptible
     machine_type      = var.machine_type
     image_type        = var.image_type
-    boot_disk_kms_key = var.boot_disk_kms_key
+    boot_disk_kms_key = var.boot_disk_kms_key == "" ? null : var.boot_disk_kms_key
 
     dynamic "taint" {
       for_each = var.preemptible ? [

@@ -91,6 +91,7 @@ variable "preemptible" {
 variable "boot_disk_kms_key" {
   type        = string
   description = "the Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool"
+  default     = ""
 }
 
 // optional variables
