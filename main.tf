@@ -8,7 +8,7 @@ resource "google_container_cluster" "primary" {
   project                     = var.project_id
   name                        = "${var.name}-${var.cluster_postfix}"
   location                    = var.location
-  node_locations              = var.node_locations 
+  node_locations              = length(var.node_locations) != 0 ? var.node_locations : null
   networking_mode             = "VPC_NATIVE"
   network                     = var.network
   subnetwork                  = var.subnet
