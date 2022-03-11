@@ -119,6 +119,12 @@ variable "enable_private_cluster" {
   default     = true
 }
 
+variable "enable_cloud_nat" {
+  type        = bool
+  description = "if enabled cloud nat will be created for private clusters"
+  default     = false
+}
+
 variable "is_shared_vpc" {
   type        = bool
   description = "if the vpc and subnet is from a shared vpc"
