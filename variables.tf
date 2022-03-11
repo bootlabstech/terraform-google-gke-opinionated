@@ -180,6 +180,12 @@ variable "enable_intranode_visibility" {
   description = "to enable intra node visibility for the cluster"
 }
 
+variable "remove_default_node_pool" {
+  type        = bool
+  default     = true
+  description = " If true, deletes the default node pool upon cluster creation. If you're using google_container_node_pool resources with no default node pool, this should be set to true, alongside setting initial_node_count to at least 1"
+}
+
 variable "oauth_scopes" {
   type        = list(string)
   description = "oauth scopes for gke cluster"
