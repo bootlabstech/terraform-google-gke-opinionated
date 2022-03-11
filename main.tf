@@ -56,7 +56,6 @@ resource "google_container_cluster" "primary" {
       service_account   = google_service_account.default.email
       machine_type      = var.machine_type
       image_type        = var.image_type
-      boot_disk_kms_key = var.boot_disk_kms_key
 
       # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
       oauth_scopes = tolist(var.oauth_scopes)
