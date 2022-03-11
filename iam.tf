@@ -57,4 +57,8 @@ resource "google_storage_bucket_iam_member" "member" {
   bucket = "artifacts.${var.project_id}.appspot.com"
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.default.email}"
+
+  depends_on = [
+    google_container_cluster.primary
+  ]
 }
