@@ -37,7 +37,7 @@ resource "google_container_cluster" "primary" {
   dynamic "workload_identity_config" {
     for_each = var.workload_identity ? [1] : []
     content {
-      workload_pool = "${data.google_project.service_project.project_id}.svc.id.goog"
+      workload_pool = "${var.project_id}.svc.id.goog"
     }
   }
 
