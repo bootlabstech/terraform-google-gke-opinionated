@@ -26,7 +26,7 @@ resource "google_container_cluster" "primary" {
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
   remove_default_node_pool = true
-  initial_node_count       = 0
+  initial_node_count       = 1
 
   dynamic "master_authorized_networks_config" {
     for_each = var.enable_private_cluster == true ? [1] : []
@@ -45,6 +45,32 @@ resource "google_container_cluster" "primary" {
     enable_private_nodes    = var.enable_private_cluster
     enable_private_endpoint = var.enable_private_cluster
     master_ipv4_cidr_block  = var.enable_private_cluster ? var.master_ipv4_cidr_block : null
+  }
+
+  //this is needed even if we are deleting defaul node pool at once
+  //because if we are enabling shielded nodes we have to enable secure boot also, without which default node pool 
+  //won't be created
+  dynamic "node_config" {
+    for_each = var.enable_shielded_nodes ? [1] : []
+    content {
+      service_account   = google_service_account.default.email
+      machine_type      = var.machine_type
+      image_type        = var.image_type
+      boot_disk_kms_key = var.boot_disk_kms_key
+
+      # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+      oauth_scopes = tolist(var.oauth_scopes)
+      dynamic "workload_metadata_config" {
+        for_each = var.workload_identity ? [1] : []
+        content {
+          mode = "GKE_METADATA"
+        }
+      }
+      shielded_instance_config {
+        enable_secure_boot          = true
+        enable_integrity_monitoring = true
+      }
+    }
   }
 
   depends_on = [
