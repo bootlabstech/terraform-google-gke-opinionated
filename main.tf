@@ -94,7 +94,8 @@ resource "google_container_node_pool" "primary_node_pool" {
   }
 
   management {
-    auto_repair = true
+    auto_repair  = true
+    auto_upgrade = true
   }
 
   node_config {
@@ -133,7 +134,9 @@ resource "google_container_node_pool" "secondary_node_pool" {
 
   management {
     auto_repair = true
+    auto_upgrade = true
   }
+
   node_config {
     service_account   = google_service_account.default.email
     preemptible       = var.preemptible
