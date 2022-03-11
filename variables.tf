@@ -191,3 +191,9 @@ variable "oauth_scopes" {
 #   default     = true
 #   description = "to enable binary authorization"
 # }
+
+variable "node_locations" {
+  type        = list(string)
+  description = "The list of zones in which the cluster's nodes are located. Nodes must be in the region of their regional cluster or in the same region as their cluster's zone for zonal clusters. If this is specified for a zonal cluster, omit the cluster's zone."
+  default     = []
+}
