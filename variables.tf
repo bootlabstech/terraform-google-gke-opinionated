@@ -119,6 +119,12 @@ variable "enable_private_cluster" {
   default     = true
 }
 
+variable "enable_private_googleapis_route" {
+  type        = bool
+  description = "enable route for private google service"
+  default     = false
+}
+
 variable "enable_cloud_nat" {
   type        = bool
   description = "if enabled cloud nat will be created for private clusters"

@@ -175,7 +175,21 @@ resource "google_container_node_pool" "secondary_node_pool" {
   }
 }
 
-// Create an external NAT IP
+//Enable a route to default internet gateway
+//Enable this if private google access is being used, check compatibility with automatically created dns zone in host project
+//Don't use this if cloud NAT is enabled
+resource "google_compute_route" "route" {
+  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  name             = "private-googleapis-route"
+  project          = var.host_project_id
+  dest_range       = "199.36.153.8/30"
+  network          = var.network
+  next_hop_gateway = "default-internet-gateway"
+  priority         = 0
+}
+
+//Create an external NAT IP
+//Don't use this if private google access is being used
 resource "google_compute_address" "nat" {
   count   = var.enable_private_cluster && var.enable_cloud_nat ? 1 : 0
   name    = format("%s-nat-ip", var.name)
@@ -183,7 +197,8 @@ resource "google_compute_address" "nat" {
   region  = var.subnet_region
 }
 
-// Create a cloud router for use by the Cloud NAT
+//Create a cloud router for use by the Cloud NAT
+//Don't use this if private google access is being used
 resource "google_compute_router" "router" {
   count   = var.enable_private_cluster && var.enable_cloud_nat ? 1 : 0
   name    = format("%s-cloud-router", var.name)
@@ -196,7 +211,8 @@ resource "google_compute_router" "router" {
   }
 }
 
-// Create a NAT router so the nodes can reach DockerHub, etc
+//Create a NAT router so the nodes can reach DockerHub, etc
+//Don't use this if private google access is being used
 resource "google_compute_router_nat" "nat" {
   count   = var.enable_private_cluster && var.enable_cloud_nat ? 1 : 0
   name    = format("%s-cloud-nat", var.name)
