@@ -188,6 +188,54 @@ resource "google_compute_route" "route" {
   priority         = 0
 }
 
+//Allow health check probes to reach cluster(cluster creation fails at health check without this)
+//Don't use this if cloud NAT is enabled
+resource "google_compute_firewall" "health-ingress-firewall" {
+  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  name   		  			 = "health-check-ingress"
+  network		  			 = var.network
+	project		  			 = var.host_project_id
+	direction					 = "INGRESS"
+  priority           = 0
+	source_ranges 		 = ["130.211.0.0/22", "35.191.0.0/16"]
+
+  allow {
+		protocol = "tcp"
+  }
+}
+
+//Allow cluster to reach health check probes(not verified if we really need this)
+//Don't use this if cloud NAT is enabled
+resource "google_compute_firewall" "health-egress-firewall" {
+  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  name   		  			 = "health-check-egress"
+  network		  			 = var.network
+	project		  			 = var.host_project_id
+	direction					 = "EGRESS"
+  priority           = 0
+	destination_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+
+  allow {
+		protocol = "tcp"
+  }
+}
+
+//Allow cluster to reach private.googleapis.com(alternative restricted.googleapis.com can also be used)
+//Don't use this if cloud NAT is enabled
+resource "google_compute_firewall" "googleapis-egress-firewall" {
+  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  name   		  			 = "googleapis-egress"
+  network		  			 = var.network
+	project		  			 = var.host_project_id
+	direction					 = "EGRESS"
+  priority           = 0
+	destination_ranges = ["199.36.153.8/30"]
+
+  allow {
+		protocol = "tcp"
+  }
+}
+
 //Create an external NAT IP
 //Don't use this if private google access is being used
 resource "google_compute_address" "nat" {
