@@ -44,10 +44,6 @@ resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
   subnetwork = var.subnet
   role       = "roles/compute.networkUser"
   member     = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
-
-  depends_on = [
-    google_container_cluster.primary
-  ]
 }
 
 //Docker pull from cluster
