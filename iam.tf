@@ -18,14 +18,14 @@ resource "google_project_iam_member" "project" {
   count   = local.if_create
   project = data.google_project.host_project[0].project_id
   role    = "roles/container.hostServiceAgentUser"
-  member = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
+  member = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_binding" "securityadmin" {
   count   = local.if_create
   project = data.google_project.host_project[0].project_id
   role    = "roles/compute.securityAdmin"
-  member = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
+  member = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
 // network access
