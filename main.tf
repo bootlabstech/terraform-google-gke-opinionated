@@ -134,6 +134,12 @@ resource "google_container_node_pool" "primary_node_pool" {
       enable_integrity_monitoring = true
     }
   }
+
+  depends_on = [
+    google_project_iam_member.project,
+    google_compute_subnetwork_iam_member.cloudservices,
+    google_compute_subnetwork_iam_member.container_engine_robot,
+  ]
 }
 
 resource "google_container_node_pool" "secondary_node_pool" {
@@ -190,6 +196,12 @@ resource "google_container_node_pool" "secondary_node_pool" {
       enable_integrity_monitoring = true
     }
   }
+
+  depends_on = [
+    google_project_iam_member.project,
+    google_compute_subnetwork_iam_member.cloudservices,
+    google_compute_subnetwork_iam_member.container_engine_robot,
+  ]
 }
 
 //Enable a route to default internet gateway
