@@ -22,10 +22,6 @@ resource "google_project_iam_binding" "project" {
   members = [
     "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
   ]
-
-  depends_on = [
-    google_container_cluster.primary
-  ]
 }
 
 resource "google_project_iam_binding" "securityadmin" {
