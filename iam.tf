@@ -22,6 +22,10 @@ resource "google_project_iam_binding" "project" {
   members = [
     "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
   ]
+
+  depends_on = [
+    google_container_cluster.primary
+  ]
 }
 
 resource "google_project_iam_binding" "securityadmin" {
@@ -31,6 +35,10 @@ resource "google_project_iam_binding" "securityadmin" {
 
   members = [
     "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
+  ]
+
+  depends_on = [
+    google_container_cluster.primary
   ]
 }
 
@@ -50,6 +58,10 @@ resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
   subnetwork = var.subnet
   role       = "roles/compute.networkUser"
   member     = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
+
+  depends_on = [
+    google_container_cluster.primary
+  ]
 }
 
 //Docker pull from cluster
