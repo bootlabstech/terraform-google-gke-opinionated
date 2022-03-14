@@ -14,28 +14,18 @@ data "google_project" "service_project" {
 
 // project level access
 // https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc
-resource "google_project_iam_binding" "project" {
+resource "google_project_iam_member" "project" {
   count   = local.if_create
   project = data.google_project.host_project[0].project_id
   role    = "roles/container.hostServiceAgentUser"
-
-  members = [
-    "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
-  ]
+  member = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
 }
 
 resource "google_project_iam_binding" "securityadmin" {
   count   = local.if_create
   project = data.google_project.host_project[0].project_id
   role    = "roles/compute.securityAdmin"
-
-  members = [
-    "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
-  ]
-
-  depends_on = [
-    google_container_cluster.primary
-  ]
+  member = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com",
 }
 
 // network access
