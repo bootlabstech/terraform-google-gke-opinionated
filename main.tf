@@ -57,23 +57,23 @@ resource "google_container_cluster" "primary" {
       service_account   = google_service_account.default.email
       machine_type      = var.machine_type
       image_type        = var.image_type
-      preemptible       = var.preemptible
+      # preemptible       = var.preemptible
 
-      dynamic "taint" {
-        for_each = var.preemptible ? [
-          {
-            key    = "cloud.google.com/gke-preemptible"
-            value  = "true"
-            effect = "NO_SCHEDULE"
-          }
-        ] : []
+      # dynamic "taint" {
+      #   for_each = var.preemptible ? [
+      #     {
+      #       key    = "cloud.google.com/gke-preemptible"
+      #       value  = "true"
+      #       effect = "NO_SCHEDULE"
+      #     }
+      #   ] : []
 
-        content {
-          key    = taint.value.key
-          value  = taint.value.value
-          effect = taint.value.effect
-        }
-      }
+      #   content {
+      #     key    = taint.value.key
+      #     value  = taint.value.value
+      #     effect = taint.value.effect
+      #   }
+      # }
 
       # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
       oauth_scopes = tolist(var.oauth_scopes)
