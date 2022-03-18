@@ -46,6 +46,14 @@ resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
   member     = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
+resource "google_project_iam_binding" "containerAdmin" {
+  count   = length(var.containerAdminMembers) != 0 ? length(var.containerAdminMembers) : 0
+  project = data.google_project.service_project[0].project_id
+  role    = "roles/container.admin"
+
+  members = var.containerAdminMembers
+}
+
 //Docker pull from cluster
 # resource "google_storage_bucket_iam_member" "member" {
 #   bucket = "artifacts.${var.project_id}.appspot.com"
