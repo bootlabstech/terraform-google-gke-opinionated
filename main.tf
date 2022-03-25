@@ -14,6 +14,7 @@ resource "google_container_cluster" "primary" {
   subnetwork                  = var.subnet
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_intranode_visibility = var.enable_intranode_visibility
+  min_master_version          = "1.21.6-gke.1503"
   #enable_binary_authorization = var.enable_binary_authorization
 
   ip_allocation_policy {
@@ -104,6 +105,7 @@ resource "google_container_node_pool" "primary_node_pool" {
   location           = var.location
   cluster            = google_container_cluster.primary.name
   initial_node_count = 1
+  version            = "1.21.6-gke.1503"
 
   autoscaling {
     min_node_count = var.default_node_pool_min_count
@@ -149,6 +151,7 @@ resource "google_container_node_pool" "secondary_node_pool" {
   location           = var.location
   cluster            = google_container_cluster.primary.name
   initial_node_count = 1
+  version            = "1.21.6-gke.1503"
 
   autoscaling {
     min_node_count = var.secondary_node_pool_min_count
