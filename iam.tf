@@ -47,7 +47,7 @@ resource "google_compute_subnetwork_iam_member" "container_engine_robot" {
 }
 
 resource "google_project_iam_binding" "containerAdmin" {
-  count   = length(var.containerAdminMembers) != 0 ? length(var.containerAdminMembers) : 0
+  count   = length(var.containerAdminMembers) != 0 ? 1 : 0
   project = data.google_project.service_project[0].project_id
   role    = "roles/container.admin"
 
