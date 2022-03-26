@@ -52,11 +52,11 @@ resource "google_container_cluster" "primary" {
   //because if we are enabling shielded nodes we have to enable secure boot also, without which default node pool 
   //won't be created
   dynamic "node_config" {
-    for_each = var.enable_shielded_nodes ? [1] : []
     content {
       service_account   = google_service_account.default.email
       machine_type      = var.machine_type
       image_type        = var.image_type
+      //not advisable to use preemptible nodes for default node pool
       # preemptible       = var.preemptible
 
       # dynamic "taint" {
@@ -83,11 +83,22 @@ resource "google_container_cluster" "primary" {
           mode = "GKE_METADATA"
         }
       }
-      shielded_instance_config {
-        enable_secure_boot          = true
-        enable_integrity_monitoring = true
+      dynamic "shielded_instance_config" {
+        for_each = var.enable_shielded_nodes ? [1] : []
+        content {
+          enable_secure_boot          = true
+          enable_integrity_monitoring = true
+        }
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to node_config, because it usually always changes after
+      # resource is created
+      node_config,
+    ]
   }
 
   depends_on = [
@@ -120,7 +131,7 @@ resource "google_container_node_pool" "primary_node_pool" {
     machine_type      = var.machine_type
     image_type        = var.image_type
     boot_disk_kms_key = var.boot_disk_kms_key
-
+  
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes = tolist(var.oauth_scopes)
     dynamic "workload_metadata_config" {
@@ -133,6 +144,14 @@ resource "google_container_node_pool" "primary_node_pool" {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to node_config, because it usually always changes after
+      # resource is created
+      node_config,
+    ]
   }
 
   depends_on = [
@@ -195,6 +214,14 @@ resource "google_container_node_pool" "secondary_node_pool" {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to node_config, because it usually always changes after
+      # resource is created
+      node_config,
+    ]
   }
 
   depends_on = [
