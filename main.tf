@@ -51,44 +51,39 @@ resource "google_container_cluster" "primary" {
   //this is needed even if we are deleting defaul node pool at once
   //because if we are enabling shielded nodes we have to enable secure boot also, without which default node pool 
   //won't be created
-  dynamic "node_config" {
-    content {
-      service_account   = google_service_account.default.email
-      machine_type      = var.machine_type
-      image_type        = var.image_type
-      //not advisable to use preemptible nodes for default node pool
-      # preemptible       = var.preemptible
-
-      # dynamic "taint" {
-      #   for_each = var.preemptible ? [
-      #     {
-      #       key    = "cloud.google.com/gke-preemptible"
-      #       value  = "true"
-      #       effect = "NO_SCHEDULE"
-      #     }
-      #   ] : []
-
-      #   content {
-      #     key    = taint.value.key
-      #     value  = taint.value.value
-      #     effect = taint.value.effect
-      #   }
-      # }
-
-      # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-      oauth_scopes = tolist(var.oauth_scopes)
-      dynamic "workload_metadata_config" {
-        for_each = var.workload_identity ? [1] : []
-        content {
-          mode = "GKE_METADATA"
-        }
+  node_config {
+    service_account   = google_service_account.default.email
+    machine_type      = var.machine_type
+    image_type        = var.image_type
+    //not advisable to use preemptible nodes for default node pool
+    # preemptible       = var.preemptible
+    # dynamic "taint" {
+    #   for_each = var.preemptible ? [
+    #     {
+    #       key    = "cloud.google.com/gke-preemptible"
+    #       value  = "true"
+    #       effect = "NO_SCHEDULE"
+    #     }
+    #   ] : []
+    #   content {
+    #     key    = taint.value.key
+    #     value  = taint.value.value
+    #     effect = taint.value.effect
+    #   }
+    # }
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    oauth_scopes = tolist(var.oauth_scopes)
+    dynamic "workload_metadata_config" {
+      for_each = var.workload_identity ? [1] : []
+      content {
+        mode = "GKE_METADATA"
       }
-      dynamic "shielded_instance_config" {
-        for_each = var.enable_shielded_nodes ? [1] : []
-        content {
-          enable_secure_boot          = true
-          enable_integrity_monitoring = true
-        }
+    }
+    dynamic "shielded_instance_config" {
+      for_each = var.enable_shielded_nodes ? [1] : []
+      content {
+        enable_secure_boot          = true
+        enable_integrity_monitoring = true
       }
     }
   }
