@@ -335,3 +335,67 @@ resource "google_compute_router_nat" "nat" {
     ]
   }
 }
+
+module "modernization-mysql-dns" {
+  count                              = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  source                             = "bootlabstech/dns-managed-zone/google"
+  version                            = "1.0.9"
+  name                               = "gcr-io"
+  dns_name                           = "gcr.io."
+  is_private                         = true
+  force_destroy                      = true
+  description                        = "private zone for GCR.io"
+  project                            = var.project_id
+  private_visibility_config_networks = var.network
+  records = [
+    {
+      name    = "*.gcr.io."
+      type    = "CNAME"
+      ttl     = "300"
+      rrdatas = ["gcr.io."]
+    },
+    {
+      name    = "gcr.io."
+      type    = "A"
+      ttl     = "300"
+      rrdatas = [
+        "199.36.153.10",
+        "199.36.153.11",
+        "199.36.153.8",
+        "199.36.153.9"
+      ]
+    }
+  ]
+}
+
+module "modernization-mysql-dns" {
+  count                              = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  source                             = "bootlabstech/dns-managed-zone/google"
+  version                            = "1.0.9"
+  name                               = "googleapis-com"
+  dns_name                           = "googleapis.com."
+  is_private                         = true
+  force_destroy                      = true
+  description                        = "private zone for googleapis.com"
+  project                            = var.project_id
+  private_visibility_config_networks = var.network
+  records = [
+    {
+      name    = "*.googleapis.com."
+      type    = "CNAME"
+      ttl     = "300"
+      rrdatas = ["private.googleapis.com."]
+    },
+    {
+      name    = "private.googleapis.com."
+      type    = "A"
+      ttl     = "300"
+      rrdatas = [
+        "199.36.153.10",
+        "199.36.153.11",
+        "199.36.153.8",
+        "199.36.153.9"
+      ]
+    }
+  ]
+}
