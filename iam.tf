@@ -54,12 +54,12 @@ resource "google_project_iam_binding" "containerAdmin" {
   members = var.containerAdminMembers
 }
 
-//Docker pull from cluster
-resource "google_storage_bucket_iam_member" "member" {
-  bucket = "asia.artifacts.${var.project_id}.appspot.com"
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.default.email}"
-  depends_on = [
-    google_service_account.default
-  ]
-}
+# //Docker pull from cluster
+# resource "google_storage_bucket_iam_member" "member" {
+#   bucket = "asia.artifacts.${var.project_id}.appspot.com"
+#   role   = "roles/storage.objectViewer"
+#   member = "serviceAccount:${google_service_account.default.email}"
+#   depends_on = [
+#     google_service_account.default
+#   ]
+# }
