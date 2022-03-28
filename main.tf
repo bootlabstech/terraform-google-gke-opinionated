@@ -336,7 +336,7 @@ resource "google_compute_router_nat" "nat" {
   }
 }
 
-module "modernization-mysql-dns" {
+module "gcr-dns" {
   count                              = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
   version                            = "1.0.9"
@@ -368,7 +368,7 @@ module "modernization-mysql-dns" {
   ]
 }
 
-module "modernization-mysql-dns" {
+module "googleapis-dns" {
   count                              = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
   version                            = "1.0.9"
