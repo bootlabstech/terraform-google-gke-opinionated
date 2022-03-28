@@ -346,7 +346,7 @@ module "gcr-dns" {
   force_destroy                      = true
   description                        = "private zone for GCR.io"
   project                            = var.project_id
-  private_visibility_config_networks = var.network
+  private_visibility_config_networks = [var.network]
   records = [
     {
       name    = "*.gcr.io."
@@ -378,7 +378,7 @@ module "googleapis-dns" {
   force_destroy                      = true
   description                        = "private zone for googleapis.com"
   project                            = var.project_id
-  private_visibility_config_networks = var.network
+  private_visibility_config_networks = [var.network]
   records = [
     {
       name    = "*.googleapis.com."
