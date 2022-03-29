@@ -349,13 +349,13 @@ module "gcr-dns" {
   private_visibility_config_networks = [var.network]
   records = [
     {
-      name    = "*.gcr.io."
+      name    = "*"
       type    = "CNAME"
       ttl     = "300"
       rrdatas = ["gcr.io."]
     },
     {
-      name    = "gcr.io."
+      name    = ""
       type    = "A"
       ttl     = "300"
       rrdatas = [
@@ -381,13 +381,13 @@ module "googleapis-dns" {
   private_visibility_config_networks = [var.network]
   records = [
     {
-      name    = "*.googleapis.com."
+      name    = "*"
       type    = "CNAME"
       ttl     = "300"
       rrdatas = ["private.googleapis.com."]
     },
     {
-      name    = "private.googleapis.com."
+      name    = "private"
       type    = "A"
       ttl     = "300"
       rrdatas = [
