@@ -242,7 +242,7 @@ resource "google_compute_route" "route" {
 //Allow health check probes to reach cluster(cluster creation fails at health check without this)
 //Don't use this if cloud NAT is enabled
 resource "google_compute_firewall" "health-ingress-firewall" {
-  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  count            = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
   name   		  			 = "health-check-ingress"
   network		  			 = var.network
 	project		  			 = var.host_project_id
@@ -258,7 +258,7 @@ resource "google_compute_firewall" "health-ingress-firewall" {
 //Allow cluster to reach health check probes(not verified if we really need this)
 //Don't use this if cloud NAT is enabled
 resource "google_compute_firewall" "health-egress-firewall" {
-  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  count            = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
   name   		  			 = "health-check-egress"
   network		  			 = var.network
 	project		  			 = var.host_project_id
@@ -274,7 +274,7 @@ resource "google_compute_firewall" "health-egress-firewall" {
 //Allow cluster to reach private.googleapis.com(alternative restricted.googleapis.com can also be used)
 //Don't use this if cloud NAT is enabled
 resource "google_compute_firewall" "googleapis-egress-firewall" {
-  count            = var.enable_private_cluster && var.enable_private_googleapis_route ? 1 : 0
+  count            = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
   name   		  			 = "googleapis-egress"
   network		  			 = var.network
 	project		  			 = var.host_project_id
@@ -337,7 +337,7 @@ resource "google_compute_router_nat" "nat" {
 }
 
 module "gcr-dns" {
-  count                              = var.enable_private_cluster && var.enable_private_googleapis_route && var.create_private_dns_zone? 1 : 0
+  count                              = var.enable_private_cluster && var.create_private_dns_zone? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
   version                            = "1.0.10"
   name                               = "gcr-io"
