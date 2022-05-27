@@ -227,3 +227,21 @@ variable "containerAdminMembers" {
   description = "The list of members who will have container admin role."
   default     = []
 }
+
+variable "cluster_default_max_pods_per_node" {
+  type        = number
+  description = "The default maximum number of pods per node in this cluster. See the official documentation for more information"
+  default     = 64
+}
+
+variable "primary_node_pool_max_pods_per_node" {
+  type        = number
+  description = "The maximum number of pods per primary node in this node pool"
+  default     = 64
+}
+
+variable "secondary_node_pool_max_pods_per_node" {
+  type        = number
+  description = "The maximum number of pods per secondary node in this node pool"
+  default     = 64
+}
