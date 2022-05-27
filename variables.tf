@@ -243,5 +243,5 @@ variable "primary_node_pool_max_pods_per_node" {
 variable "secondary_node_pool_max_pods_per_node" {
   type        = number
   description = "The maximum number of pods per secondary node in this node pool"
-  default     = 64 
+  default     = 64
 }

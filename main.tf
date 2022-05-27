@@ -26,9 +26,9 @@ resource "google_container_cluster" "primary" {
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
-  remove_default_node_pool = var.remove_default_node_pool
-  initial_node_count         = 1
-  default_max_pods_per_node  = var.cluster_default_max_pods_per_node
+  remove_default_node_pool  = var.remove_default_node_pool
+  initial_node_count        = 1
+  default_max_pods_per_node = var.cluster_default_max_pods_per_node
 
   dynamic "master_authorized_networks_config" {
     for_each = var.enable_private_cluster == true ? [1] : []
@@ -53,9 +53,9 @@ resource "google_container_cluster" "primary" {
   //because if we are enabling shielded nodes we have to enable secure boot also, without which default node pool 
   //won't be created
   node_config {
-    service_account   = google_service_account.default.email
-    machine_type      = var.machine_type
-    image_type        = var.image_type
+    service_account = google_service_account.default.email
+    machine_type    = var.machine_type
+    image_type      = var.image_type
     //not advisable to use preemptible nodes for default node pool
     # preemptible       = var.preemptible
     # dynamic "taint" {
@@ -128,7 +128,7 @@ resource "google_container_node_pool" "primary_node_pool" {
     machine_type      = var.machine_type
     image_type        = var.image_type
     boot_disk_kms_key = var.boot_disk_kms_key
-  
+
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes = tolist(var.oauth_scopes)
     dynamic "workload_metadata_config" {
@@ -174,7 +174,7 @@ resource "google_container_node_pool" "secondary_node_pool" {
   }
 
   management {
-    auto_repair = true
+    auto_repair  = true
     auto_upgrade = true
   }
 
@@ -246,48 +246,48 @@ resource "google_compute_route" "route" {
 //Allow health check probes to reach cluster(cluster creation fails at health check without this)
 //Don't use this if cloud NAT is enabled
 resource "google_compute_firewall" "health-ingress-firewall" {
-  count            = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
-  name   		  			 = "health-check-ingress"
-  network		  			 = var.network
-	project		  			 = var.host_project_id
-	direction					 = "INGRESS"
-  priority           = 0
-	source_ranges 		 = ["130.211.0.0/22", "35.191.0.0/16"]
+  count         = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
+  name          = "health-check-ingress"
+  network       = var.network
+  project       = var.host_project_id
+  direction     = "INGRESS"
+  priority      = 0
+  source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
 
   allow {
-		protocol = "tcp"
+    protocol = "tcp"
   }
 }
 
 //Allow cluster to reach health check probes(not verified if we really need this)
 //Don't use this if cloud NAT is enabled
 resource "google_compute_firewall" "health-egress-firewall" {
-  count            = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
-  name   		  			 = "health-check-egress"
-  network		  			 = var.network
-	project		  			 = var.host_project_id
-	direction					 = "EGRESS"
+  count              = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
+  name               = "health-check-egress"
+  network            = var.network
+  project            = var.host_project_id
+  direction          = "EGRESS"
   priority           = 0
-	destination_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+  destination_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
 
   allow {
-		protocol = "tcp"
+    protocol = "tcp"
   }
 }
 
 //Allow cluster to reach private.googleapis.com(alternative restricted.googleapis.com can also be used)
 //Don't use this if cloud NAT is enabled
 resource "google_compute_firewall" "googleapis-egress-firewall" {
-  count            = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
-  name   		  			 = "googleapis-egress"
-  network		  			 = var.network
-	project		  			 = var.host_project_id
-	direction					 = "EGRESS"
+  count              = var.enable_private_cluster && var.enable_private_googleapis_firewall ? 1 : 0
+  name               = "googleapis-egress"
+  network            = var.network
+  project            = var.host_project_id
+  direction          = "EGRESS"
   priority           = 0
-	destination_ranges = ["199.36.153.8/30"]
+  destination_ranges = ["199.36.153.8/30"]
 
   allow {
-		protocol = "tcp"
+    protocol = "tcp"
   }
 }
 
@@ -341,7 +341,7 @@ resource "google_compute_router_nat" "nat" {
 }
 
 module "gcr-dns" {
-  count                              = var.enable_private_cluster && var.create_private_dns_zone? 1 : 0
+  count                              = var.enable_private_cluster && var.create_private_dns_zone ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
   version                            = "1.0.10"
   name                               = "gcr-io"
@@ -359,9 +359,9 @@ module "gcr-dns" {
       rrdatas = ["gcr.io."]
     },
     {
-      name    = "gcr.io."
-      type    = "A"
-      ttl     = "300"
+      name = "gcr.io."
+      type = "A"
+      ttl  = "300"
       rrdatas = [
         "199.36.153.10",
         "199.36.153.11",
@@ -373,7 +373,7 @@ module "gcr-dns" {
 }
 
 module "googleapis-dns" {
-  count                              = var.enable_private_cluster && var.enable_private_googleapis_route && var.create_private_dns_zone? 1 : 0
+  count                              = var.enable_private_cluster && var.enable_private_googleapis_route && var.create_private_dns_zone ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
   version                            = "1.0.10"
   name                               = "googleapis-com"
@@ -391,9 +391,9 @@ module "googleapis-dns" {
       rrdatas = ["private.googleapis.com."]
     },
     {
-      name    = "private.googleapis.com."
-      type    = "A"
-      ttl     = "300"
+      name = "private.googleapis.com."
+      type = "A"
+      ttl  = "300"
       rrdatas = [
         "199.36.153.10",
         "199.36.153.11",
