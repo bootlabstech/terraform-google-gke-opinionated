@@ -27,7 +27,8 @@ resource "google_container_cluster" "primary" {
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
   remove_default_node_pool = var.remove_default_node_pool
-  initial_node_count       = 1
+  initial_node_count         = 1
+  default_max_pods_per_node  = var.cluster_default_max_pods_per_node
 
   dynamic "master_authorized_networks_config" {
     for_each = var.enable_private_cluster == true ? [1] : []
@@ -110,6 +111,7 @@ resource "google_container_node_pool" "primary_node_pool" {
   location           = var.location
   cluster            = google_container_cluster.primary.name
   initial_node_count = 1
+  max_pods_per_node  = var.primary_node_pool_max_pods_per_node
 
   autoscaling {
     min_node_count = var.default_node_pool_min_count
@@ -163,6 +165,8 @@ resource "google_container_node_pool" "secondary_node_pool" {
   location           = var.location
   cluster            = google_container_cluster.primary.name
   initial_node_count = 1
+  max_pods_per_node  = var.secondary_node_pool_max_pods_per_node
+
 
   autoscaling {
     min_node_count = var.secondary_node_pool_min_count
