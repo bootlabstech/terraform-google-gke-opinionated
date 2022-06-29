@@ -255,3 +255,4 @@ variable "release_channel" {
   type        = string
   description = "The selected release channel"
 }
+
