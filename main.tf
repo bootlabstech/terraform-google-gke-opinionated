@@ -29,6 +29,13 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool  = var.remove_default_node_pool
   initial_node_count        = 1
   default_max_pods_per_node = var.cluster_default_max_pods_per_node
+  
+  dynamic "release_channel" {
+    for_each = var.enable_release_channel ? [1] : []
+    content {
+      channel = var.release_channel
+    }
+  }
 
   dynamic "master_authorized_networks_config" {
     for_each = var.enable_private_cluster == true ? [1] : []
