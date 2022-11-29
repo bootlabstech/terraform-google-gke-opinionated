@@ -55,6 +55,12 @@ resource "google_container_cluster" "primary" {
     enable_private_endpoint = var.enable_private_cluster
     public_endpoint         = true
     master_ipv4_cidr_block  = var.enable_private_cluster ? var.master_ipv4_cidr_block : null
+   
+    master_global_access_config {
+      enabled = true
+    }
+
+
   }
 
   //this is needed even if we are deleting defaul node pool at once
@@ -174,7 +180,6 @@ resource "google_container_node_pool" "secondary_node_pool" {
   cluster            = google_container_cluster.primary.name
   initial_node_count = 1
   max_pods_per_node  = var.secondary_node_pool_max_pods_per_node
-
 
   autoscaling {
     min_node_count = var.secondary_node_pool_min_count
