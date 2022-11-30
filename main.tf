@@ -52,15 +52,12 @@ resource "google_container_cluster" "primary" {
 
   private_cluster_config {
     enable_private_nodes    = var.enable_private_cluster
-    enable_private_endpoint = var.enable_private_cluster
-    public_endpoint         = true
+    enable_private_endpoint = var.enable_private_endpoint
     master_ipv4_cidr_block  = var.enable_private_cluster ? var.master_ipv4_cidr_block : null
    
     master_global_access_config {
       enabled = true
     }
-
-
   }
 
   //this is needed even if we are deleting defaul node pool at once
@@ -172,76 +169,76 @@ resource "google_container_node_pool" "primary_node_pool" {
   ]
 }
 
-resource "google_container_node_pool" "secondary_node_pool" {
-  provider           = google-beta
-  project            = var.project_id
-  name               = "${var.name}-secondary-node-pool"
-  location           = var.location
-  cluster            = google_container_cluster.primary.name
-  initial_node_count = 1
-  max_pods_per_node  = var.secondary_node_pool_max_pods_per_node
+# resource "google_container_node_pool" "secondary_node_pool" {
+#   provider           = google-beta
+#   project            = var.project_id
+#   name               = "${var.name}-secondary-node-pool"
+#   location           = var.location
+#   cluster            = google_container_cluster.primary.name
+#   initial_node_count = 1
+#   max_pods_per_node  = var.secondary_node_pool_max_pods_per_node
 
-  autoscaling {
-    min_node_count = var.secondary_node_pool_min_count
-    max_node_count = var.secondary_node_pool_max_count
-  }
+#   autoscaling {
+#     min_node_count = var.secondary_node_pool_min_count
+#     max_node_count = var.secondary_node_pool_max_count
+#   }
 
-  management {
-    auto_repair  = true
-    auto_upgrade = true
-  }
+#   management {
+#     auto_repair  = true
+#     auto_upgrade = true
+#   }
 
-  node_config {
-    service_account   = google_service_account.default.email
-    preemptible       = var.preemptible
-    machine_type      = var.machine_type
-    image_type        = var.image_type
-    boot_disk_kms_key = var.boot_disk_kms_key == "" ? null : var.boot_disk_kms_key
+#   node_config {
+#     service_account   = google_service_account.default.email
+#     preemptible       = var.preemptible
+#     machine_type      = var.machine_type
+#     image_type        = var.image_type
+#     boot_disk_kms_key = var.boot_disk_kms_key == "" ? null : var.boot_disk_kms_key
 
-    dynamic "taint" {
-      for_each = var.preemptible ? [
-        {
-          key    = "cloud.google.com/gke-preemptible"
-          value  = "true"
-          effect = "NO_SCHEDULE"
-        }
-      ] : []
+#     dynamic "taint" {
+#       for_each = var.preemptible ? [
+#         {
+#           key    = "cloud.google.com/gke-preemptible"
+#           value  = "true"
+#           effect = "NO_SCHEDULE"
+#         }
+#       ] : []
 
-      content {
-        key    = taint.value.key
-        value  = taint.value.value
-        effect = taint.value.effect
-      }
-    }
+#       content {
+#         key    = taint.value.key
+#         value  = taint.value.value
+#         effect = taint.value.effect
+#       }
+#     }
 
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    oauth_scopes = tolist(var.oauth_scopes)
-    dynamic "workload_metadata_config" {
-      for_each = var.workload_identity ? [1] : []
-      content {
-        mode = "GKE_METADATA"
-      }
-    }
-    shielded_instance_config {
-      enable_secure_boot          = true
-      enable_integrity_monitoring = true
-    }
-  }
+#     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+#     oauth_scopes = tolist(var.oauth_scopes)
+#     dynamic "workload_metadata_config" {
+#       for_each = var.workload_identity ? [1] : []
+#       content {
+#         mode = "GKE_METADATA"
+#       }
+#     }
+#     shielded_instance_config {
+#       enable_secure_boot          = true
+#       enable_integrity_monitoring = true
+#     }
+#   }
 
-  lifecycle {
-    ignore_changes = [
-      # Ignore changes to node_config, because it usually always changes after
-      # resource is created
-      node_config,
-    ]
-  }
+#   lifecycle {
+#     ignore_changes = [
+#       # Ignore changes to node_config, because it usually always changes after
+#       # resource is created
+#       node_config,
+#     ]
+#   }
 
-  depends_on = [
-    google_project_iam_member.project,
-    google_compute_subnetwork_iam_member.cloudservices,
-    google_compute_subnetwork_iam_member.container_engine_robot,
-  ]
-}
+#   depends_on = [
+#     google_project_iam_member.project,
+#     google_compute_subnetwork_iam_member.cloudservices,
+#     google_compute_subnetwork_iam_member.container_engine_robot,
+#   ]
+# }
 
 //Enable a route to default internet gateway
 //Enable this if private google access is being used, check compatibility with automatically created dns zone in host project
