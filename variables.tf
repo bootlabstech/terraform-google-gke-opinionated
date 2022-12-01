@@ -57,7 +57,7 @@ EOT
 
 variable "image_type" {
   type        = string
-  default     = "COS"
+  default     = "cos_containerd"
   description = "the default image type used by NAP once a new node pool is being created"
 }
 
