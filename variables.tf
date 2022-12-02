@@ -237,12 +237,6 @@ variable "enable_release_channel" {
   default     = true
 }
 
-variable "enable_private_endpoint" {
-  type        = bool
-  description = "Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters"
-  default     = false
-}
-
 variable "release_channel" {
   type        = string
   description = "The selected release channel"
@@ -262,4 +256,9 @@ variable "release_channel" {
 # variable "secondary_node_pool_max_count" {
 #   type        = number
 #   description = "this is the min count in the secondary node pool"
+# }
+# variable "enable_private_endpoint" {
+#   type        = bool
+#   description = "Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters"
+#   default     = false
 # }
