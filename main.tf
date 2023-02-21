@@ -100,14 +100,6 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-monitoring_config {
-    managed_prometheus {
-      enabled = true
-    }
-  }
-
-
-
   lifecycle {
     ignore_changes = [
       # Ignore changes to node_config, because it usually always changes after
