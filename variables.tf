@@ -242,6 +242,14 @@ variable "release_channel" {
   description = "The selected release channel"
 }
 
+variable "initial_node_count" {
+  type = string
+  description = "(optional) describe your variable"
+}
+
+
+
+
 
 # variable "secondary_node_pool_max_pods_per_node" {
 #   type        = number

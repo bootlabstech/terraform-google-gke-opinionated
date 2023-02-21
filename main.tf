@@ -22,7 +22,7 @@ resource "google_container_cluster" "primary" {
     cluster_secondary_range_name  = var.is_shared_vpc ? var.cluster_secondary_range_name : null
     services_secondary_range_name = var.is_shared_vpc ? var.services_secondary_range_name : null
   }
-
+     
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
   # node pool and immediately delete it.
@@ -100,6 +100,14 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+monitoring_config {
+    managed_prometheus {
+      enabled = true
+    }
+  }
+
+
+
   lifecycle {
     ignore_changes = [
       # Ignore changes to node_config, because it usually always changes after
@@ -121,7 +129,7 @@ resource "google_container_node_pool" "primary_node_pool" {
   name               = "${var.name}-primary-node-pool"
   location           = var.location
   cluster            = google_container_cluster.primary.name
-  initial_node_count = 1
+  initial_node_count = var.initial_node_count
   max_pods_per_node  = var.primary_node_pool_max_pods_per_node
 
   autoscaling {
