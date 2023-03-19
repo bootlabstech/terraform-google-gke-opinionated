@@ -15,6 +15,61 @@ resource "google_container_cluster" "primary" {
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_intranode_visibility = var.enable_intranode_visibility
   #enable_binary_authorization = var.enable_binary_authorization
+   
+      master_authorized_networks_config {
+     cidr_blocks {
+       cidr_block = "34.93.0.0/16"
+       display_name = "cloudbuild-1"
+     }
+     cidr_blocks {
+       cidr_block = "34.100.128.0/17"
+       display_name = "cloudbuild-2"
+     }
+     cidr_blocks {
+       cidr_block = "34.104.108.0/23"
+       display_name = "cloudbuild-3"
+     }
+     cidr_blocks {
+       cidr_block = "34.124.44.0/23"
+       display_name = "cloudbuild-4"
+     }
+     cidr_blocks {
+       cidr_block = "34.157.87.0/24"
+       display_name = "cloudbuild-5"
+     }
+     cidr_blocks {
+       cidr_block = "34.157.215.0/24"
+       display_name = "cloudbuild-6"
+     }
+     cidr_blocks {
+       cidr_block = "35.200.128.0/17"
+       display_name = "cloudbuild-7"
+     }
+     cidr_blocks {
+       cidr_block = "35.201.41.0/24"
+       display_name = "cloudbuild-8"
+     }
+     cidr_blocks {
+       cidr_block = "35.207.192.0/18"
+       display_name = "cloudbuild-9"
+     }
+     cidr_blocks {
+       cidr_block = "35.220.42.0/24"
+       display_name = "cloudbuild-10"
+     }
+     cidr_blocks {
+       cidr_block = "35.234.208.0/20"
+       display_name = "cloudbuild-11"
+     }
+     cidr_blocks {
+       cidr_block = "35.242.42.0/24"
+       display_name = "cloudbuild-12"
+     }
+     cidr_blocks {
+       cidr_block = "35.244.0.0/18"
+       display_name = "cloudbuild-13"
+     }
+   }
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block       = var.is_shared_vpc ? null : "/14"
@@ -22,10 +77,7 @@ resource "google_container_cluster" "primary" {
     cluster_secondary_range_name  = var.is_shared_vpc ? var.cluster_secondary_range_name : null
     services_secondary_range_name = var.is_shared_vpc ? var.services_secondary_range_name : null
   }
-     
-  # We can't create a cluster with no node pool defined, but we want to only use
-  # separately managed node pools. So we create the smallest possible default
-  # node pool and immediately delete it.
+
   remove_default_node_pool  = var.remove_default_node_pool
   initial_node_count        = 1
   default_max_pods_per_node = var.cluster_default_max_pods_per_node
@@ -34,12 +86,6 @@ resource "google_container_cluster" "primary" {
     for_each = var.enable_release_channel ? [1] : []
     content {
       channel = var.release_channel
-    }
-  }
-
-  dynamic "master_authorized_networks_config" {
-    for_each = var.enable_private_cluster == true ? [1] : []
-    content {
     }
   }
 
@@ -52,7 +98,7 @@ resource "google_container_cluster" "primary" {
 
   private_cluster_config {
     enable_private_nodes    = var.enable_private_cluster
-    enable_private_endpoint = var.enable_private_cluster
+    enable_private_endpoint = var.enable_private_endpoint
     master_ipv4_cidr_block  = var.enable_private_cluster ? var.master_ipv4_cidr_block : null
 
     master_global_access_config {
@@ -60,30 +106,10 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-  //this is needed even if we are deleting defaul node pool at once
-  //because if we are enabling shielded nodes we have to enable secure boot also, without which default node pool 
-  //won't be created
   node_config {
     service_account = google_service_account.default.email
     machine_type    = var.machine_type
     image_type      = var.image_type
-    //not advisable to use preemptible nodes for default node pool
-    # preemptible       = var.preemptible
-    # dynamic "taint" {
-    #   for_each = var.preemptible ? [
-    #     {
-    #       key    = "cloud.google.com/gke-preemptible"
-    #       value  = "true"
-    #       effect = "NO_SCHEDULE"
-    #     }
-    #   ] : []
-    #   content {
-    #     key    = taint.value.key
-    #     value  = taint.value.value
-    #     effect = taint.value.effect
-    #   }
-    # }
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes = tolist(var.oauth_scopes)
     dynamic "workload_metadata_config" {
       for_each = var.workload_identity ? [1] : []
@@ -139,8 +165,6 @@ resource "google_container_node_pool" "primary_node_pool" {
     machine_type      = var.machine_type
     image_type        = var.image_type
     boot_disk_kms_key = var.boot_disk_kms_key
-
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes = tolist(var.oauth_scopes)
     dynamic "workload_metadata_config" {
       for_each = var.workload_identity ? [1] : []
@@ -156,8 +180,6 @@ resource "google_container_node_pool" "primary_node_pool" {
 
   lifecycle {
     ignore_changes = [
-      # Ignore changes to node_config, because it usually always changes after
-      # resource is created
       node_config,
     ]
   }
@@ -168,77 +190,6 @@ resource "google_container_node_pool" "primary_node_pool" {
     google_compute_subnetwork_iam_member.container_engine_robot,
   ]
 }
-
-# resource "google_container_node_pool" "secondary_node_pool" {
-#   provider           = google-beta
-#   project            = var.project_id
-#   name               = "${var.name}-secondary-node-pool"
-#   location           = var.location
-#   cluster            = google_container_cluster.primary.name
-#   initial_node_count = 1
-#   max_pods_per_node  = var.secondary_node_pool_max_pods_per_node
-
-#   autoscaling {
-#     min_node_count = var.secondary_node_pool_min_count
-#     max_node_count = var.secondary_node_pool_max_count
-#   }
-
-#   management {
-#     auto_repair  = true
-#     auto_upgrade = true
-#   }
-
-#   node_config {
-#     service_account   = google_service_account.default.email
-#     preemptible       = var.preemptible
-#     machine_type      = var.machine_type
-#     image_type        = var.image_type
-#     boot_disk_kms_key = var.boot_disk_kms_key == "" ? null : var.boot_disk_kms_key
-
-#     dynamic "taint" {
-#       for_each = var.preemptible ? [
-#         {
-#           key    = "cloud.google.com/gke-preemptible"
-#           value  = "true"
-#           effect = "NO_SCHEDULE"
-#         }
-#       ] : []
-
-#       content {
-#         key    = taint.value.key
-#         value  = taint.value.value
-#         effect = taint.value.effect
-#       }
-#     }
-
-#     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-#     oauth_scopes = tolist(var.oauth_scopes)
-#     dynamic "workload_metadata_config" {
-#       for_each = var.workload_identity ? [1] : []
-#       content {
-#         mode = "GKE_METADATA"
-#       }
-#     }
-#     shielded_instance_config {
-#       enable_secure_boot          = true
-#       enable_integrity_monitoring = true
-#     }
-#   }
-
-#   lifecycle {
-#     ignore_changes = [
-#       # Ignore changes to node_config, because it usually always changes after
-#       # resource is created
-#       node_config,
-#     ]
-#   }
-
-#   depends_on = [
-#     google_project_iam_member.project,
-#     google_compute_subnetwork_iam_member.cloudservices,
-#     google_compute_subnetwork_iam_member.container_engine_robot,
-#   ]
-# }
 
 //Enable a route to default internet gateway
 //Enable this if private google access is being used, check compatibility with automatically created dns zone in host project

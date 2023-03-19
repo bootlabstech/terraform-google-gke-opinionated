@@ -178,7 +178,7 @@ variable "enable_shielded_nodes" {
 
 variable "workload_identity" {
   type        = bool
-  default     = true
+  default     = false
   description = "to enable workload identity metadata"
 }
 
@@ -230,7 +230,6 @@ variable "primary_node_pool_max_pods_per_node" {
   default     = 64
 }
 
-
 variable "enable_release_channel" {
   type        = bool
   description = "Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters"
@@ -247,26 +246,8 @@ variable "initial_node_count" {
   description = "(optional) describe your variable"
 }
 
-
-
-
-
-# variable "secondary_node_pool_max_pods_per_node" {
-#   type        = number
-#   description = "The maximum number of pods per secondary node in this node pool"
-#   default     = 64
-# }
-# variable "secondary_node_pool_min_count" {
-#   type        = number
-#   description = "this is the min count in the secondary node pool"
-# }
-
-# variable "secondary_node_pool_max_count" {
-#   type        = number
-#   description = "this is the min count in the secondary node pool"
-# }
-# variable "enable_private_endpoint" {
-#   type        = bool
-#   description = "Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters"
-#   default     = false
-# }
+variable "enable_private_endpoint" {
+  type        = bool
+  description = "Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters"
+  default     = false
+}
