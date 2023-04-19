@@ -18,56 +18,109 @@ resource "google_container_cluster" "primary" {
    
       master_authorized_networks_config {
      cidr_blocks {
-       cidr_block = "34.93.0.0/16"
+       cidr_block = "34.19.0.0/17"
        display_name = "cloudbuild-1"
      }
      cidr_blocks {
-       cidr_block = "34.100.128.0/17"
+       cidr_block = "34.82.0.0/15"
        display_name = "cloudbuild-2"
      }
      cidr_blocks {
-       cidr_block = "34.104.108.0/23"
+       cidr_block = "34.105.0.0/17"
        display_name = "cloudbuild-3"
      }
      cidr_blocks {
-       cidr_block = "34.124.44.0/23"
+       cidr_block = "34.118.192.0/21"
        display_name = "cloudbuild-4"
      }
      cidr_blocks {
-       cidr_block = "34.157.87.0/24"
+       cidr_block = "34.127.0.0/17"
        display_name = "cloudbuild-5"
      }
      cidr_blocks {
-       cidr_block = "34.157.215.0/24"
+       cidr_block = "34.145.0.0/17"
        display_name = "cloudbuild-6"
      }
      cidr_blocks {
-       cidr_block = "35.200.128.0/17"
+       cidr_block = "34.157.112.0/21"
        display_name = "cloudbuild-7"
      }
      cidr_blocks {
-       cidr_block = "35.201.41.0/24"
+       cidr_block = "34.157.240.0/21"
        display_name = "cloudbuild-8"
      }
      cidr_blocks {
-       cidr_block = "35.207.192.0/18"
+       cidr_block = "34.168.0.0/15"
        display_name = "cloudbuild-9"
      }
      cidr_blocks {
-       cidr_block = "35.220.42.0/24"
+       cidr_block = "35.185.192.0/18"
        display_name = "cloudbuild-10"
      }
      cidr_blocks {
-       cidr_block = "35.234.208.0/20"
+       cidr_block = "35.197.0.0/17"
        display_name = "cloudbuild-11"
      }
      cidr_blocks {
-       cidr_block = "35.242.42.0/24"
+       cidr_block = "35.199.144.0/20"
        display_name = "cloudbuild-12"
      }
      cidr_blocks {
-       cidr_block = "35.244.0.0/18"
+       cidr_block = "35.199.160.0/19"
        display_name = "cloudbuild-13"
+     }
+
+     cidr_blocks {
+       cidr_block = "35.203.128.0/18"
+       display_name = "cloudbuild-14"
+     }
+     cidr_blocks {
+       cidr_block = "35.212.128.0/17"
+       display_name = "cloudbuild-15"
+     }
+     cidr_blocks {
+       cidr_block = "35.220.48.0/21"
+       display_name = "cloudbuild-16"
+     }
+     cidr_blocks {
+       cidr_block = "35.227.128.0/18"
+       display_name = "cloudbuild-17"
+     }
+     cidr_blocks {
+       cidr_block = "35.230.0.0/17"
+       display_name = "cloudbuild-18"
+     }
+     cidr_blocks {
+       cidr_block = "35.233.128.0/17"
+       display_name = "cloudbuild-19"
+     }
+     cidr_blocks {
+       cidr_block = "35.242.48.0/21"
+       display_name = "cloudbuild-20"
+     }
+     cidr_blocks {
+       cidr_block = "35.243.32.0/21"
+       display_name = "cloudbuild-21"
+     }
+     cidr_blocks {
+       cidr_block = "35.247.0.0/17"
+       display_name = "cloudbuild-22"
+     }
+     cidr_blocks {
+       cidr_block = "104.196.224.0/19"
+       display_name = "cloudbuild-23"
+     }
+     cidr_blocks {
+       cidr_block = "104.198.0.0/20"
+       display_name = "cloudbuild-24"
+     }
+     cidr_blocks {
+       cidr_block = "104.198.96.0/20"
+       display_name = "cloudbuild-25"
+     }
+     cidr_blocks {
+       cidr_block = "104.199.112.0/20"
+       display_name = "cloudbuild-26"
      }
    }
 
