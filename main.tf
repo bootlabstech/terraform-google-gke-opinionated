@@ -15,114 +15,6 @@ resource "google_container_cluster" "primary" {
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_intranode_visibility = var.enable_intranode_visibility
   #enable_binary_authorization = var.enable_binary_authorization
-   
-      master_authorized_networks_config {
-     cidr_blocks {
-       cidr_block = "34.19.0.0/17"
-       display_name = "cloudbuild-1"
-     }
-     cidr_blocks {
-       cidr_block = "34.82.0.0/15"
-       display_name = "cloudbuild-2"
-     }
-     cidr_blocks {
-       cidr_block = "34.105.0.0/17"
-       display_name = "cloudbuild-3"
-     }
-     cidr_blocks {
-       cidr_block = "34.118.192.0/21"
-       display_name = "cloudbuild-4"
-     }
-     cidr_blocks {
-       cidr_block = "34.127.0.0/17"
-       display_name = "cloudbuild-5"
-     }
-     cidr_blocks {
-       cidr_block = "34.145.0.0/17"
-       display_name = "cloudbuild-6"
-     }
-     cidr_blocks {
-       cidr_block = "34.157.112.0/21"
-       display_name = "cloudbuild-7"
-     }
-     cidr_blocks {
-       cidr_block = "34.157.240.0/21"
-       display_name = "cloudbuild-8"
-     }
-     cidr_blocks {
-       cidr_block = "34.168.0.0/15"
-       display_name = "cloudbuild-9"
-     }
-     cidr_blocks {
-       cidr_block = "35.185.192.0/18"
-       display_name = "cloudbuild-10"
-     }
-     cidr_blocks {
-       cidr_block = "35.197.0.0/17"
-       display_name = "cloudbuild-11"
-     }
-     cidr_blocks {
-       cidr_block = "35.199.144.0/20"
-       display_name = "cloudbuild-12"
-     }
-     cidr_blocks {
-       cidr_block = "35.199.160.0/19"
-       display_name = "cloudbuild-13"
-     }
-
-     cidr_blocks {
-       cidr_block = "35.203.128.0/18"
-       display_name = "cloudbuild-14"
-     }
-     cidr_blocks {
-       cidr_block = "35.212.128.0/17"
-       display_name = "cloudbuild-15"
-     }
-     cidr_blocks {
-       cidr_block = "35.220.48.0/21"
-       display_name = "cloudbuild-16"
-     }
-     cidr_blocks {
-       cidr_block = "35.227.128.0/18"
-       display_name = "cloudbuild-17"
-     }
-     cidr_blocks {
-       cidr_block = "35.230.0.0/17"
-       display_name = "cloudbuild-18"
-     }
-     cidr_blocks {
-       cidr_block = "35.233.128.0/17"
-       display_name = "cloudbuild-19"
-     }
-     cidr_blocks {
-       cidr_block = "35.242.48.0/21"
-       display_name = "cloudbuild-20"
-     }
-     cidr_blocks {
-       cidr_block = "35.243.32.0/21"
-       display_name = "cloudbuild-21"
-     }
-     cidr_blocks {
-       cidr_block = "35.247.0.0/17"
-       display_name = "cloudbuild-22"
-     }
-     cidr_blocks {
-       cidr_block = "104.196.224.0/19"
-       display_name = "cloudbuild-23"
-     }
-     cidr_blocks {
-       cidr_block = "104.198.0.0/20"
-       display_name = "cloudbuild-24"
-     }
-     cidr_blocks {
-       cidr_block = "104.198.96.0/20"
-       display_name = "cloudbuild-25"
-     }
-     cidr_blocks {
-       cidr_block = "104.199.112.0/20"
-       display_name = "cloudbuild-26"
-     }
-   }
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block       = var.is_shared_vpc ? null : "/14"
@@ -142,6 +34,12 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+  dynamic "master_authorized_networks_config" {
+    for_each = var.enable_private_cluster == true ? [1] : []
+    content {
+    }
+  }
+
   dynamic "workload_identity_config" {
     for_each = var.workload_identity ? [1] : []
     content {
@@ -151,18 +49,18 @@ resource "google_container_cluster" "primary" {
 
   private_cluster_config {
     enable_private_nodes    = var.enable_private_cluster
-    enable_private_endpoint = var.enable_private_endpoint
+    enable_private_endpoint = var.enable_private_cluster
     master_ipv4_cidr_block  = var.enable_private_cluster ? var.master_ipv4_cidr_block : null
 
     master_global_access_config {
       enabled = true
     }
   }
-
   node_config {
     service_account = google_service_account.default.email
     machine_type    = var.machine_type
     image_type      = var.image_type
+    //not advisable to use preemptible nodes for default node pool
     oauth_scopes = tolist(var.oauth_scopes)
     dynamic "workload_metadata_config" {
       for_each = var.workload_identity ? [1] : []
@@ -181,8 +79,6 @@ resource "google_container_cluster" "primary" {
 
   lifecycle {
     ignore_changes = [
-      # Ignore changes to node_config, because it usually always changes after
-      # resource is created
       node_config,
     ]
   }
@@ -218,6 +114,8 @@ resource "google_container_node_pool" "primary_node_pool" {
     machine_type      = var.machine_type
     image_type        = var.image_type
     boot_disk_kms_key = var.boot_disk_kms_key
+
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     oauth_scopes = tolist(var.oauth_scopes)
     dynamic "workload_metadata_config" {
       for_each = var.workload_identity ? [1] : []
@@ -233,6 +131,8 @@ resource "google_container_node_pool" "primary_node_pool" {
 
   lifecycle {
     ignore_changes = [
+      # Ignore changes to node_config, because it usually always changes after
+      # resource is created
       node_config,
     ]
   }
@@ -243,6 +143,7 @@ resource "google_container_node_pool" "primary_node_pool" {
     google_compute_subnetwork_iam_member.container_engine_robot,
   ]
 }
+
 
 //Enable a route to default internet gateway
 //Enable this if private google access is being used, check compatibility with automatically created dns zone in host project
