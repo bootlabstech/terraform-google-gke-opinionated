@@ -24,7 +24,7 @@ resource "google_container_cluster" "primary" {
   }
 
   remove_default_node_pool  = var.remove_default_node_pool
-  initial_node_count        = 1
+  initial_node_count        = var.default_node_pool_min_count
   default_max_pods_per_node = var.cluster_default_max_pods_per_node
 
   dynamic "release_channel" {
