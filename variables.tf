@@ -243,7 +243,7 @@ variable "release_channel" {
 }
 
 variable "initial_node_count" {
-  type = string
-  description = "(optional) describe your variable"
+  type = number
+  description = "Initial node count for the cluster"
 }
 
