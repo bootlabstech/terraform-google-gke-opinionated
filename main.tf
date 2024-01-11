@@ -79,7 +79,7 @@ resource "google_container_cluster" "primary" {
 
   lifecycle {
     ignore_changes = [
-      node_config,
+      node_config,initial_node_count
     ]
   }
 
@@ -133,7 +133,7 @@ resource "google_container_node_pool" "primary_node_pool" {
     ignore_changes = [
       # Ignore changes to node_config, because it usually always changes after
       # resource is created
-      node_config,
+      node_config,initial_node_count
     ]
   }
 
