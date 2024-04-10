@@ -91,7 +91,6 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_node_pool" {
-  provider           = google-beta
   project            = var.project_id
   name               = "${var.name}-primary-node-pool"
   location           = var.location
