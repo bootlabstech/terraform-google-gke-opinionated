@@ -14,7 +14,7 @@ resource "google_container_cluster" "primary" {
   subnetwork                  = var.subnet
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_intranode_visibility = var.enable_intranode_visibility
-  #enable_binary_authorization = var.enable_binary_authorization
+
 
   ip_allocation_policy {
     cluster_ipv4_cidr_block       = var.is_shared_vpc ? null : "/14"
