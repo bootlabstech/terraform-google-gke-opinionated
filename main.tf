@@ -257,7 +257,7 @@ resource "google_compute_router_nat" "nat" {
 module "gcr-dns" {
   count                              = var.enable_private_cluster && var.create_private_dns_zone ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
-  version                            = "1.0.10"
+  version                            = "1.0.11"
   name                               = "gcr-io"
   dns_name                           = "gcr.io."
   is_private                         = true
@@ -289,7 +289,7 @@ module "gcr-dns" {
 module "googleapis-dns" {
   count                              = var.enable_private_cluster && var.enable_private_googleapis_route && var.create_private_dns_zone ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
-  version                            = "1.0.10"
+  version                            = "1.0.11"
   name                               = "googleapis-com"
   dns_name                           = "googleapis.com."
   is_private                         = true
