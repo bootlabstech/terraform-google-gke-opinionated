@@ -24,7 +24,7 @@ resource "google_project_iam_member" "project" {
 resource "google_project_iam_member" "securityadmin" {
   count   = local.if_create
   project = data.google_project.host_project[0].project_id
-  role    = "roles/compute.securityAdmin"
+  role    = "roles/Custom_compute_security"
   member  = "serviceAccount:service-${data.google_project.service_project[0].number}@container-engine-robot.iam.gserviceaccount.com"
 }
 
