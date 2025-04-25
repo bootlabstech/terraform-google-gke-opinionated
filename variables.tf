@@ -247,3 +247,8 @@ variable "initial_node_count" {
   description = "Initial node count for the cluster"
 }
 
+
+variable "vertical_pod_autoscaling_enabled" {
+  type = bool
+  default = false
+}

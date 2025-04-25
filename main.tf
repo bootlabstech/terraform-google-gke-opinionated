@@ -14,6 +14,9 @@ resource "google_container_cluster" "primary" {
   subnetwork                  = var.subnet
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_intranode_visibility = var.enable_intranode_visibility
+  vertical_pod_autoscaling {
+    enabled = var.vertical_pod_autoscaling_enabled
+  }
 
 
   ip_allocation_policy {
