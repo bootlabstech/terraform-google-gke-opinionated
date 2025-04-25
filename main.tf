@@ -328,4 +328,8 @@ resource "google_project_iam_binding" "network_binding7" {
   members = [
     "serviceAccount:service-${data.google_project.service_project6.number}@compute-system.iam.gserviceaccount.com","serviceAccount:service-${data.google_project.service_project6.number}@container-engine-robot.iam.gserviceaccount.com"
   ]
+  lifecycle {
+    ignore_changes = [ members ]
+  }
+
 }
