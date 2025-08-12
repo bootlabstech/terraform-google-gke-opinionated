@@ -85,6 +85,14 @@ resource "google_container_cluster" "primary" {
       node_config,initial_node_count
     ]
   }
+  
+  maintenance_policy {
+    recurring_window {
+      start_time = var.maintenance_start_time
+      end_time   = var.maintenance_end_time
+      recurrence = var.maintenance_recurrence
+    }
+  }
 
   depends_on = [
     google_project_iam_member.project,
