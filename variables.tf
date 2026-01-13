@@ -270,3 +270,14 @@ variable "maintenance_recurrence" {
   type        = string
   default     = "FREQ=WEEKLY;BYDAY=SA,SU"
 }
+
+variable "enable_release_channel" {
+  type        = bool
+  description = "Configuration options for the Release channel feature, which provide more control over automatic upgrades of your GKE clusters"
+  default     = false
+}
+variable "release_channel" {
+  type        = string
+  description = "The selected release channel"
+}
+
