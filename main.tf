@@ -4,6 +4,61 @@ resource "google_service_account" "default" {
   project      = var.project_id
 }
 
+# API enablement ONLY
+resource "google_project_service" "container" {
+  project            = var.project_id
+  service            = "container.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "compute" {
+  project            = var.project_id
+  service            = "compute.googleapis.com"
+  disable_on_destroy = false
+}
+
+# KMS key auto-fetching ONLY
+data "google_project" "current" {
+  project_id = var.project_id
+}
+
+data "google_kms_key_ring" "project_keyring" {
+  project  = var.project_id
+  name     = var.project_id
+  location = var.location
+}
+
+data "google_kms_crypto_key" "project_key" {
+  name     = "${data.google_project.current.name}-key"
+  key_ring = data.google_kms_key_ring.project_keyring.id
+}
+
+data "google_project" "service_project6" {
+  project_id = var.project_id
+}
+
+resource "google_kms_crypto_key_iam_member" "gke_cmek" {
+  crypto_key_id = data.google_kms_crypto_key.project_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  member = "serviceAccount:service-${data.google_project.service_project6.number}@compute-system.iam.gserviceaccount.com"
+
+  lifecycle {
+    ignore_changes = [member]
+  }
+}
+
+resource "google_kms_crypto_key_iam_member" "gke_container_cmek" {
+  crypto_key_id = data.google_kms_crypto_key.project_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  member = "serviceAccount:service-${data.google_project.service_project6.number}@container-engine-robot.iam.gserviceaccount.com"
+
+  lifecycle {
+    ignore_changes = [member]
+  }
+}
+
 resource "google_container_cluster" "primary" {
   project                     = var.project_id
   name                        = "${var.name}-${var.cluster_postfix}"
@@ -59,18 +114,21 @@ resource "google_container_cluster" "primary" {
       enabled = true
     }
   }
+
   node_config {
     service_account = google_service_account.default.email
     machine_type    = var.machine_type
     image_type      = var.image_type
     //not advisable to use preemptible nodes for default node pool
     oauth_scopes = tolist(var.oauth_scopes)
+
     dynamic "workload_metadata_config" {
       for_each = var.workload_identity ? [1] : []
       content {
         mode = "GKE_METADATA"
       }
     }
+
     dynamic "shielded_instance_config" {
       for_each = var.enable_shielded_nodes ? [1] : []
       content {
@@ -85,7 +143,7 @@ resource "google_container_cluster" "primary" {
   #     node_config,initial_node_count
   #   ]
   # }
-  
+
   # maintenance_policy {
   #   recurring_window {
   #     start_time = var.maintenance_start_time
@@ -98,6 +156,10 @@ resource "google_container_cluster" "primary" {
     google_project_iam_member.project,
     google_compute_subnetwork_iam_member.cloudservices,
     google_compute_subnetwork_iam_member.container_engine_robot,
+    google_project_service.container,
+    google_project_service.compute,
+    google_kms_crypto_key_iam_member.gke_cmek,
+    google_kms_crypto_key_iam_member.gke_container_cmek,
   ]
 }
 
@@ -108,6 +170,7 @@ resource "google_container_node_pool" "primary_node_pool" {
   cluster            = google_container_cluster.primary.name
   initial_node_count = var.initial_node_count
   max_pods_per_node  = var.primary_node_pool_max_pods_per_node
+
 
   autoscaling {
     min_node_count = var.default_node_pool_min_count
@@ -120,19 +183,19 @@ resource "google_container_node_pool" "primary_node_pool" {
   }
 
   node_config {
-    service_account   = google_service_account.default.email
-    machine_type      = var.machine_type
-    image_type        = var.image_type
-    # boot_disk_kms_key = var.boot_disk_kms_key
-
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    service_account = google_service_account.default.email
+    machine_type    = var.machine_type
+    image_type      = var.image_type
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM.
     oauth_scopes = tolist(var.oauth_scopes)
+
     dynamic "workload_metadata_config" {
       for_each = var.workload_identity ? [1] : []
       content {
         mode = "GKE_METADATA"
       }
     }
+
     shielded_instance_config {
       enable_secure_boot          = true
       enable_integrity_monitoring = true
@@ -151,6 +214,10 @@ resource "google_container_node_pool" "primary_node_pool" {
     google_project_iam_member.project,
     google_compute_subnetwork_iam_member.cloudservices,
     google_compute_subnetwork_iam_member.container_engine_robot,
+    google_project_service.container,
+    google_project_service.compute,
+    google_kms_crypto_key_iam_member.gke_cmek,
+    google_kms_crypto_key_iam_member.gke_container_cmek,
   ]
 }
 
@@ -327,20 +394,4 @@ module "googleapis-dns" {
       ]
     }
   ]
-}
-
-data "google_project" "service_project6" {
-  project_id = var.project_id
-}
-resource "google_project_iam_binding" "network_binding7" {
-  count   = 1
-  project = var.project_id
-  role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  members = [
-    "serviceAccount:service-${data.google_project.service_project6.number}@compute-system.iam.gserviceaccount.com","serviceAccount:service-${data.google_project.service_project6.number}@container-engine-robot.iam.gserviceaccount.com"
-  ]
-  lifecycle {
-    ignore_changes = [ members ]
-  }
-
 }
