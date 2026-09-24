@@ -22,26 +22,11 @@ data "google_project" "current" {
   project_id = var.project_id
 }
 
-data "google_kms_key_ring" "project_keyring" {
-  project  = var.project_id
-  name     = var.project_id
-  location = var.location
-}
-
-data "google_kms_crypto_key" "project_key" {
-  name     = "${data.google_project.current.name}-key"
-  key_ring = data.google_kms_key_ring.project_keyring.id
-}
-
-data "google_project" "service_project6" {
-  project_id = var.project_id
-}
-
 resource "google_kms_crypto_key_iam_member" "gke_cmek" {
-  crypto_key_id = data.google_kms_crypto_key.project_key.id
+  crypto_key_id = "projects/${var.project_id}/locations/${var.subnet_region}/keyRings/${var.project_id}/cryptoKeys/${data.google_project.current.name}-key"
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 
-  member = "serviceAccount:service-${data.google_project.service_project6.number}@compute-system.iam.gserviceaccount.com"
+  member = "serviceAccount:service-${data.google_project.current.number}@compute-system.iam.gserviceaccount.com"
 
   lifecycle {
     ignore_changes = [member]
@@ -49,10 +34,10 @@ resource "google_kms_crypto_key_iam_member" "gke_cmek" {
 }
 
 resource "google_kms_crypto_key_iam_member" "gke_container_cmek" {
-  crypto_key_id = data.google_kms_crypto_key.project_key.id
+  crypto_key_id = "projects/${var.project_id}/locations/${var.subnet_region}/keyRings/${var.project_id}/cryptoKeys/${data.google_project.current.name}-key"
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 
-  member = "serviceAccount:service-${data.google_project.service_project6.number}@container-engine-robot.iam.gserviceaccount.com"
+  member = "serviceAccount:service-${data.google_project.current.number}@container-engine-robot.iam.gserviceaccount.com"
 
   lifecycle {
     ignore_changes = [member]
@@ -69,6 +54,7 @@ resource "google_container_cluster" "primary" {
   subnetwork                  = var.subnet
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_intranode_visibility = var.enable_intranode_visibility
+  
   vertical_pod_autoscaling {
     enabled = var.vertical_pod_autoscaling_enabled
   }
@@ -136,6 +122,7 @@ resource "google_container_cluster" "primary" {
         enable_integrity_monitoring = true
       }
     }
+    
   }
 
   # lifecycle {
@@ -335,7 +322,7 @@ resource "google_compute_router_nat" "nat" {
 module "gcr-dns" {
   count                              = var.enable_private_cluster && var.create_private_dns_zone ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
-  version                            = "1.0.10"
+  version                            = "1.0.10" #old version 10
   name                               = "gcr-io"
   dns_name                           = "gcr.io."
   is_private                         = true
@@ -367,7 +354,7 @@ module "gcr-dns" {
 module "googleapis-dns" {
   count                              = var.enable_private_cluster && var.enable_private_googleapis_route && var.create_private_dns_zone ? 1 : 0
   source                             = "bootlabstech/dns-managed-zone/google"
-  version                            = "1.0.10"
+  version                            = "1.0.10" #old version 10
   name                               = "googleapis-com"
   dns_name                           = "googleapis.com."
   is_private                         = true
